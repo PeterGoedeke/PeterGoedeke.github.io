@@ -57,7 +57,6 @@ html {
 .landing {
     width: 100vw;
     height: 100vh;
-    background-color: blue;
     text-align: center;
 }
 .landing img {
@@ -198,7 +197,7 @@ input {
         height: auto;
     }
     .landing {
-        background-color: blue;
+        background-color: yellow;
     }
     li {
         width: 45%;
@@ -224,6 +223,11 @@ input {
 @media (max-width: 480px) and (orientation: landscape) {
     li {
         font-size: 5vw;
+    }
+}
+@media (min-width: 480px) {
+    input {
+        bottom: 1%;
     }
 }
 @media screen and (-webkit-min-device-pixel-ratio:0) {

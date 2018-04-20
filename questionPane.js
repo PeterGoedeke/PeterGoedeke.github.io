@@ -97,11 +97,11 @@ function refreshQuestion() {
 }
 
 $("input").on('focus', function() {
-    console.log("test1");
-    if($(window).width() <= 500) {
-        $(".inputBox").css('bottom', '15%');
-        console.log("test");
-    }
+    if($(window).width() <= 480) $(".inputBox").css('bottom', '15%');
+    else $(".inputBox").css('bottom', '1%');
+});
+$("input").on('focusout', function() {
+    $(".inputBox").css('bottom', '1%');
 });
 
 /*
