@@ -53,7 +53,7 @@ $(document).click(function(event) {
         $(".inputBox input").attr("placeholder", exampleFormats[selectedQuestion]);
         $(".inputBox input").focus();
     } else if(visible) {
-        if(!$(event.target).closest(".questionPane").length) {
+        if(!$(event.target).closest(".questionPane").length && !$(event.target).closest(".explanationPane").length) {
             $(".questionPane").addClass("hidden");
             visible = false;
             selectedQuestion = NaN;
@@ -63,7 +63,13 @@ $(document).click(function(event) {
         $(".explanationArea").html("<div>" + questionExplanations[selectedQuestion] + "</div>");
         $(".explanationPane").css('color', 'white'); MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$(".explanationPane").css('color', 'black');});
         $(".explanationPane").removeClass("hidden");
-    } else $(".explanationPane").addClass("hidden");
+    } else if(!$(event.target).closest(".explanationPane").length) $(".explanationPane").addClass("hidden");
+    if($(event.target).closest(".back").length) {
+        $(".questionPane").addClass("hidden");
+        visible = false;
+        selectedQuestion = NaN;
+    }
+    if($(event.target).closest(".backe").length) $(".explanationPane").addClass("hidden");
 });
 
 $(document).keypress(function(event) {
