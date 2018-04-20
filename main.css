@@ -50,12 +50,11 @@ CSS starts here---------------------------------------------------------------
 */
 
 html {
-    background-color: #fff7e2;
+    background-color: #efefef;
     font-family: "Fjalla One", sans-serif;
 }
 
 .landing {
-    width: 100vw;
     height: 100vh;
     text-align: center;
 }
@@ -63,15 +62,19 @@ html {
     width: 45vw;
     height: 45vw;
     vertical-align: middle;
+    border-radius: 10px;
 }
 
 li {
     display: inline-table;
-    background-color: green;
+    background-color: white;
+    border-radius: 5px;
+    border: solid lightgrey 1px;
     margin: 5px 0 5px 0;
 }
 li:hover, .tab:hover {
     cursor: pointer;
+    box-shadow: inset 0 0 10px;
 }
 ul {
     text-align: center;
@@ -84,7 +87,9 @@ ul {
     height: 90vh;
     top: 5vh;
     left: 5vw;
-    background-color: red;
+    background-color: white;
+    border: solid lightgrey 1px;
+    border-radius: 5px;
 }
 .questionPaneHeading {
     display: block;
@@ -124,17 +129,19 @@ input {
     width: 3vw;
     min-height: 30px;
     min-width: 30px;
-    background-color: lightblue;
     text-align: center;
 }
 .difficultyScaler {
     position: absolute;
-    display:block;
+    display: block;
     height: 70%;
     top: 15%;
     width: 3vw;
     left: -3vw;
-    background-color: pink;
+    background: linear-gradient(orange, yellow, lightgreen);
+    border: solid lightgrey 1px;
+    border-radius: 5px 0 0 5px;
+    box-sizing: border-box;
 }
 .difficultyArrow {
     position: absolute;
@@ -148,7 +155,8 @@ input {
     display: block;
     height: 95vh;
     top: 2.5vh;
-    background-color: lightgreen;
+    background-color: white;
+    border: solid lightgrey 1px;
 }
 .explanationPaneHeading {
     display: block;
@@ -174,9 +182,6 @@ input {
         height: 90vh;
         width: auto;
     }
-    .landing {
-        background-color: orange;
-    }
     li {
         width: 25%;
         height: 15vh;
@@ -195,9 +200,6 @@ input {
     .landing img {
         width: 90vw;
         height: auto;
-    }
-    .landing {
-        background-color: yellow;
     }
     li {
         width: 45%;
