@@ -1,0 +1,243 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+    overflow-x: hidden;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/*
+------------------------------------------------------------------------------
+CSS starts here---------------------------------------------------------------
+------------------------------------------------------------------------------
+*/
+
+html {
+    background-color: #fff7e2;
+    font-family: "Fjalla One", sans-serif;
+}
+
+.landing {
+    width: 100vw;
+    height: 100vh;
+    background-color: blue;
+    text-align: center;
+}
+.landing img {
+    width: 45vw;
+    height: 45vw;
+    vertical-align: middle;
+}
+
+li {
+    display: inline-table;
+    background-color: green;
+    margin: 5px 0 5px 0;
+}
+li:hover, .tab:hover {
+    cursor: pointer;
+}
+ul {
+    text-align: center;
+}
+
+.questionPane {
+    position: fixed;
+    display: block;
+    width: 90vw;
+    height: 90vh;
+    top: 5vh;
+    left: 5vw;
+    background-color: red;
+}
+.questionPaneHeading {
+    display: block;
+    width: 100%;
+    height: 2.5%;
+    text-align: center;
+    padding-top: 2.5%;
+}
+.displayArea {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 95%;
+    margin-left: 2.5%;
+    height: 90%;
+    text-align: center;
+}
+.inputBox {
+    display: block;
+    position: absolute;
+    width: 100%;
+    bottom: 1%;
+}
+input {
+    text-align: center;
+    margin: 0 auto;
+    display: block;
+    height: 2%;
+    width: 30%;
+}
+.tab {
+    position: absolute;
+    display: block;
+    right: 0;
+    top: 0;
+    height: 3vw;
+    width: 3vw;
+    min-height: 30px;
+    min-width: 30px;
+    background-color: lightblue;
+    text-align: center;
+}
+.difficultyScaler {
+    position: absolute;
+    display:block;
+    height: 70%;
+    top: 15%;
+    width: 3vw;
+    left: -3vw;
+    background-color: pink;
+}
+.difficultyArrow {
+    position: absolute;
+    display: block;
+    bottom: 0%;
+    height: 5%;
+}
+
+.explanationPane {
+    position: fixed;
+    display: block;
+    height: 95vh;
+    top: 2.5vh;
+    background-color: lightgreen;
+}
+.explanationPaneHeading {
+    display: block;
+    width: 100%;
+    height: 7.5%;
+    text-align: center;
+    padding-top: 2.5%;
+    font-size: 5vh;
+    border-bottom: solid black 1px;
+}
+.explanationArea {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 95%;
+    margin-left: 2.5%;
+    height: 90%;
+    text-align: center;
+}
+
+@media (orientation: landscape) {
+    .landing img {
+        height: 90vh;
+        width: auto;
+    }
+    .landing {
+        background-color: orange;
+    }
+    li {
+        width: 25%;
+        height: 15vh;
+        font-size: 2vw;
+    }
+    .displayArea {
+        font-size: 4vh;
+    }
+    .explanationPane {
+        width: 50vw;
+        left: 25vw;
+        font-size: 2.3vh;
+    }
+}
+@media (orientation: portrait) {
+    .landing img {
+        width: 90vw;
+        height: auto;
+    }
+    .landing {
+        background-color: yellow;
+    }
+    li {
+        width: 45%;
+        height: 10vw;
+    }
+    .displayArea {
+        font-size: 3.5vh;
+    }
+    .explanationPane {
+        width: 80vw;
+        left: 10vw;
+        font-size: 2.3vh;
+    }
+}
+@media (max-width: 480px) {
+    li {
+        width: 90%;
+    }
+}
+@media (max-width: 480px) and (orientation: landscape) {
+    li {
+        font-size: 5vw;
+    }
+}
+
+.aligner {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+input {
+    text-align: center;
+}
+.hidden {
+    display: none;
+}
+.incorrect {
+    background-color: #ffc5ba;
+}
+.correct {
+    background-color: #d5ffd3;
+}
