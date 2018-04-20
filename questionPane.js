@@ -41,7 +41,7 @@ $(document).click(function(event) {
         $(".questionPane").removeClass("hidden");
         $(".inputBox").removeClass("hidden");
         visible = true;
-        currentDifficulty = 9;
+        currentDifficulty = 0;
         console.log(currentDifficulty);
         selectedQuestion = event.target.id;
         if(selectedQuestion == 21) wildcard = true; else wildcard = false;
@@ -58,7 +58,7 @@ $(document).click(function(event) {
     }
     if($(event.target).closest(".tab").length) {
         $(".explanationArea").html("<div>" + questionExplanations[selectedQuestion] + "</div>");
-        $(".explanationPane").css('color', 'lightgreen'); MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$(".explanationPane").css('color', 'black');});
+        $(".explanationPane").css('color', 'white'); MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$(".explanationPane").css('color', 'black');});
         $(".explanationPane").removeClass("hidden");
     } else $(".explanationPane").addClass("hidden");
 });
@@ -77,7 +77,7 @@ $(".inputBox").submit(function(event) {
         refreshQuestion();
     } else {
         $(".displayArea").html("<div>" + currentQuestion.stepsOfWorking[currentQuestion.stepsOfWorking[currentQuestion.stepsOfWorking.length - 1]] + "</div>");
-        $(".displayArea").css('color', 'red'); MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$(".displayArea").css('color', 'black');});
+        $(".displayArea").css('color', 'white'); MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$(".displayArea").css('color', 'black');});
         $(".inputBox input").addClass("incorrect");
         if(currentDifficulty >= 2) currentDifficulty -= 2.25; else currentDifficulty = 0;
         $(".difficultyArrow").css('bottom', (currentDifficulty / 9) * 95 + '%');
@@ -92,7 +92,7 @@ function refreshQuestion() {
     selectedQuestion = wildcard ? Math.floor(Math.random() * questions.length) : selectedQuestion;
     currentQuestion = questions[selectedQuestion]();
     $(".displayArea").html("<div>" + currentQuestion.questionText + "</div>");
-    $(".displayArea").css('color', 'red'); MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$(".displayArea").css('color', 'black');});
+    $(".displayArea").css('color', 'white'); MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$(".displayArea").css('color', 'black');});
     $(".inputBox input").attr("placeholder", exampleFormats[selectedQuestion]);
     console.log(currentQuestion.answers);
 }
