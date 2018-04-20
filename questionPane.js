@@ -67,7 +67,7 @@ $(document).click(function(event) {
 });
 
 $(document).keypress(function(event) {
-    if(event.which == 13) {
+    if(event.which == 13 && $(".inputBox input").is(":focus") && $("input").val() != '') {
         $(".inputBox").trigger('submit');
     }
 });
