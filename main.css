@@ -204,9 +204,6 @@ input {
         width: 45%;
         height: 10vw;
     }
-    .questionPane {
-        top: 0;
-    }
     .displayArea {
         font-size: 3.5vh;
     }
@@ -219,6 +216,9 @@ input {
 @media (max-width: 480px) {
     li {
         width: 90%;
+    }
+    .questionPane {
+        top: 0;
     }
 }
 @media (max-width: 480px) and (orientation: landscape) {

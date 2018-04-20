@@ -96,6 +96,12 @@ function refreshQuestion() {
     console.log(currentQuestion.answers);
 }
 
+$("input").on('focus', function() {
+    if($("window").width() <= 500) {
+        $(".inputBox").css('bottom', '15%');
+    }
+});
+
 /*
 function resize() {
     if(toggle) {
