@@ -3,17 +3,17 @@
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var ALPHABET = "abcdefghijklmnopqrstuvwxyz";
-lastLetter = "a";
+var lastLetter = "a";
 function randomLetter() {
     do {
-        letter = ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+        var letter = ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
     } while (letter == lastLetter);
     lastLetter = letter;
     return letter;
 }
 
 var NAMES = ["Thanh", "Clifton", "Vincent", "Len", "Orlando", "Marcel", "Christoper", "Granville", "Brenton", "Buford", "Jerry", "Michal", "Corey", "Simon", "Marvin", "Gerry", "Rufus", "Darrell", "Benton", "Jonathon", "Gerardo", "Deangelo", "Gabriel", "Bill", "Carol", "Demetrius", "Sammie", "Wendell", "Tim", "Jermaine", "Trey", "Scott", "Jamar", "Jacob", "Gus", "Alvaro", "Luther", "Weston", "Rodolfo", "Mac", "Branden", "Julio", "Royce", "Malcolm", "Ramiro", "Kelvin", "Elliot", "Ethan", "Waldo", "Joesph"];
-lastName = "Thanh";
+var lastName = "Thanh";
 function randomName() {
     do {
         name = NAMES[Math.floor(Math.random() * NAMES.length)];
@@ -65,8 +65,8 @@ function renderFQuadratic(a, step, answer2) {
 //---------------------------
 
 function quadraticFormula(a, b, c) {
-    result = (-1 * b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
-    result2 = (-1 * b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
+    var result = (-1 * b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
+    var result2 = (-1 * b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
     return [result, result2];
 }
 
@@ -88,6 +88,7 @@ function random(lower, upper) {
     lower = scalingRange(lower, upper);upper = scalingRange(lower, upper, false);
     if (Math.random() < chanceOfOne) return 1;
     do {
+        var value = 0;
         type % 2 != 0 ? value = Math.floor(Math.abs(Math.random() - Math.random()) * (1 + upper - lower) + lower) : value = Math.floor(Math.random() * (upper - lower + 1) + lower);
         if (negatives && coinflip()) value = value * -1;
         if (type > 1 && value % 2 != 0) value++;
@@ -103,8 +104,8 @@ function quadraticRandom() {
 var currentDifficulty = 0;
 function scalingRange(trueLower, trueUpper) {
     var isLower = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-
-    if (currentDifficulty <= 5) lower = trueLower;else lower = trueLower + (trueUpper - trueLower) / 10 * (currentDifficulty - 5);
+    var lower = 0; var upper = 0;
+    if (currentDifficulty <= 5) lower = trueLower; else lower = trueLower + (trueUpper - trueLower) / 10 * (currentDifficulty - 5);
     upper = (trueUpper + trueLower) / 2 + (trueUpper - trueLower) / 20 * currentDifficulty;
     return isLower ? lower : upper;
 }
@@ -120,14 +121,14 @@ function scalingRange(trueLower, trueUpper) {
 //---------------------------
 function createQuadratic(answer1, answer2) {
     var a = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : random(scalingRange(1, 5), scalingRange(1, 5, false), false, 1, 0.2);
-
+    var b = 0; var c = 0;
     b = a * answer2 * -1 + answer1 * a * -1;
     c = answer1 * a * -1 * answer2 * -1;
-    workingIndex = a == 1 ? 0 : 1;
-    step1 = answer1;step2 = answer2;
+    var workingIndex = a == 1 ? 0 : 1;
+    var step1 = answer1; var step2 = answer2;
     if (workingIndex == 1) {
-        step = a * c;
-        i = 1;
+        var step = a * c;
+        var i = 1;
         while (step1 * step2 != step && step1 < 1000) {
             i++;
             step1 = answer1 * i;step2 = answer2 * i;
@@ -145,22 +146,21 @@ function createQuadratic(answer1, answer2) {
 }
 
 function createFQuadratic(answer1, answer2) {
-    a = random(scalingRange(1, 5), scalingRange(1, 5, false), false, 1, 0.2);
-    step = a * answer1 * -1;
-    b = a * answer2 + step;
-    c = step * answer2 * -1;
-    workingIndex = a == 1 ? 0 : 1;
-    step1 = answer1;step2 = answer2;
+    var a = random(scalingRange(1, 5), scalingRange(1, 5, false), false, 1, 0.2);
+    var step = a * answer1 * -1;
+    var b = a * answer2 + step;
+    var c = step * answer2 * -1;
+    var workingIndex = a == 1 ? 0 : 1;
+    var step1 = answer1; var step2 = answer2;
     if (workingIndex == 1) {
-        step3 = a * c;
-        i = 1;
+        var step3 = a * c;
+        var i = 1;
         while (step1 * step2 != step3 && step1 < 1000) {
             i++;
             step1 = answer1 * i;step2 = answer2 * i;
         }
         step1 = step1 * -1;step2 = step2 * -1;
     }
-    console.log("answer1: " + answer1 + " answer2: " + answer2 + " a: " + a + " b: " + b + " c: " + c);
     return {
         a: a, b: b, c: c, step: step, answer2: answer2,
         workingAnswer1: step1,
@@ -170,10 +170,10 @@ function createFQuadratic(answer1, answer2) {
 }
 
 function createQuadraticFraction() {
-    commonAnswer = random(scalingRange(2, 6), scalingRange(2, 6, false), true);
-    answerTop = random(scalingRange(2, 6), scalingRange(2, 6, false), true);
+    var commonAnswer = random(scalingRange(2, 6), scalingRange(2, 6, false), true);
+    var answerTop = random(scalingRange(2, 6), scalingRange(2, 6, false), true);
     do {
-        answerBottom = random(scalingRange(2, 6), scalingRange(2, 6, false), true);
+        var answerBottom = random(scalingRange(2, 6), scalingRange(2, 6, false), true);
     } while (answerBottom == commonAnswer || answerBottom == commonAnswer * -1);
     return {
         answerTop: answerTop,
@@ -186,8 +186,8 @@ function createQuadraticFraction() {
 //Primary algorithms---------
 //---------------------------
 function solveQuadratic() {
-    x = createQuadratic(quadraticRandom(), quadraticRandom());
-    questionType = coinflip();
+    var x = createQuadratic(quadraticRandom(), quadraticRandom());
+    var questionType = coinflip();
     return {
         questionText: questionType ? "Solve " + renderQuadratic(x.a, x.b, x.c) + " \\(=0\\)" : "Give the x-coordinates of the points where the graph of y = " + renderQuadratic(x.a, x.b, x.c) + " cuts the x-axis.",
         answers: [x.answer1 + "," + x.answer2, x.answer2 + "," + x.answer1],
@@ -196,8 +196,8 @@ function solveQuadratic() {
 }
 
 function factoriseQuadratic() {
-    x = createQuadratic(quadraticRandom(), quadraticRandom());
-    questionType = random(0, 3);
+    var x = createQuadratic(quadraticRandom(), quadraticRandom());
+    var questionType = random(0, 3);
     return {
         questionText: questionType == 0 ? "Factorise " + renderQuadratic(x.a, x.b, x.c) : questionType == 1 ? "The area of a rectangle is " + renderQuadratic(x.a, x.b, x.c) + ", what are the lengths of the sides in terms of x?" : questionType == 2 ? "A rectangle has the area of " + renderQuadratic(x.a, x.b, x.c) + ", state the width and length of this rectangle in terms of x." : "The area of a rectange can be represented by " + renderQuadratic(x.a, x.b, x.c) + ", what are the lengths of the sides in terms of x?",
         answers: ["(" + hideIfOne(x.a) + "x" + addPlus(x.workingAnswer2) + ")(x" + addPlus(x.answer1 * -1, false) + ")", "(x" + addPlus(x.answer1 * -1, false) + ")(" + hideIfOne(x.a) + "x" + addPlus(x.workingAnswer2) + ")", "(" + hideIfOne(x.a) + "x" + addPlus(x.workingAnswer1) + ")(x" + addPlus(x.answer2 * -1, false) + ")", "(x" + addPlus(x.answer2 * -1, false) + ")(" + hideIfOne(x.a) + "x" + addPlus(x.workingAnswer1) + ")"],
@@ -206,7 +206,7 @@ function factoriseQuadratic() {
 }
 
 function simplifyFraction() {
-    x = createQuadraticFraction();
+    var x = createQuadraticFraction();
     var top = createQuadratic(x.answerTop, x.commonAnswer);
     var bottom = createQuadratic(x.answerBottom, x.commonAnswer);
     return {
@@ -217,17 +217,17 @@ function simplifyFraction() {
 }
 
 function solveFraction() {
-    x = createQuadraticFraction();
+    var x = createQuadraticFraction();
     x.answerTop = Math.abs(x.answerTop);x.answerBottom = Math.abs(x.answerBottom);
     var top = createQuadratic(x.answerTop, x.commonAnswer, 1);
     var bottom = createQuadratic(x.answerBottom, x.commonAnswer, 1);
-    lower = x.answerTop - x.answerBottom > 0 ? x.answerTop + 1 : x.answerBottom + 1;
-    answer1 = random(lower, 10, false, 2);
-    numerator = answer1 - x.answerTop;denominator = answer1 - x.answerBottom;
-    numeratorIsX = true;
+    var lower = x.answerTop - x.answerBottom > 0 ? x.answerTop + 1 : x.answerBottom + 1;
+    var answer1 = random(lower, 10, false, 2);
+    var numerator = answer1 - x.answerTop; var denominator = answer1 - x.answerBottom;
+    var numeratorIsX = true;
     for (var _i = 1;; _i++) {
-        newNumerator = numerator * _i;
-        newDenominator = denominator * _i;
+        var newNumerator = numerator * _i;
+        var newDenominator = denominator * _i;
         if (Math.abs(newNumerator % answer1) == 0) {
             numerator = newNumerator / answer1;
             numeratorIsX = true;
@@ -241,7 +241,7 @@ function solveFraction() {
             break;
         }
     }
-    answer2 = numeratorIsX ? quadraticFormula(numerator, x.answerBottom * numerator * -1 - denominator, denominator * x.answerTop) : quadraticFormula(denominator, x.answerTop * denominator * -1 - numerator, numerator * x.answerBottom);
+    var answer2 = numeratorIsX ? quadraticFormula(numerator, x.answerBottom * numerator * -1 - denominator, denominator * x.answerTop) : quadraticFormula(denominator, x.answerTop * denominator * -1 - numerator, numerator * x.answerBottom);
     answer2 = answer1 == answer2[0] ? answer2[1] : answer2[0];
     numeratorIsX ? numerator = hideIfOne(numerator) + "x" : denominator = hideIfOne(denominator) + "x";
     return {
@@ -252,7 +252,7 @@ function solveFraction() {
 }
 
 function expandQuadratic() {
-    x = createFQuadratic(quadraticRandom(), quadraticRandom());
+    var x = createFQuadratic(quadraticRandom(), quadraticRandom());
     return {
         questionText: "Expand " + renderFQuadratic(x.a, x.step, x.answer2),
         answers: [hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x" + addPlus(x.c * -1, false)],
@@ -261,7 +261,7 @@ function expandQuadratic() {
 }
 
 function oneValueForX() {
-    x = createQuadratic(random(scalingRange(2, 10), scalingRange(2, 10, false), true, 2), random(scalingRange(2, 10), scalingRange(2, 10, false), true, 2));
+    var x = createQuadratic(random(scalingRange(2, 10), scalingRange(2, 10, false), true, 2), random(scalingRange(2, 10), scalingRange(2, 10, false), true, 2));
     return {
         questionText: randomName() + " is trying to find a value for c so that " + toLatex(hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x + c") + " has only one solution for x. Give the value of c.",
         answers: [Math.pow(x.b / 2, 2).toString()],
@@ -270,8 +270,8 @@ function oneValueForX() {
 }
 
 function valueAtPoint() {
-    x = createQuadratic(quadraticRandom(), quadraticRandom());
-    point = random(0, 4, true);
+    var x = createQuadratic(quadraticRandom(), quadraticRandom());
+    var point = random(0, 4, true);
     return {
         questionText: "A parabola has the equation: " + toLatex(hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x" + addPlus(x.c)) + ". What is the value of y when x = " + point + "?",
         answers: [(x.a * Math.pow(point, 2) + x.b * point + x.c).toString()],
@@ -280,8 +280,8 @@ function valueAtPoint() {
 }
 
 function solveQuadraticWithRHS() {
-    x = createQuadratic(random(scalingRange(5, 10), scalingRange(5, 10, false), true, 1), random(scalingRange(5, 10), scalingRange(5, 10, false), true));
-    rhs = random(1, 150);
+    var x = createQuadratic(random(scalingRange(5, 10), scalingRange(5, 10, false), true, 1), random(scalingRange(5, 10), scalingRange(5, 10, false), true));
+    var rhs = random(1, 150);
     x.c = x.c + rhs;
     return {
         questionText: "A rectangle has an area of " + renderQuadratic(x.a, x.b, x.c) + ". If the area of the rectangle is " + rhs + ", what is the value(s) of x?",
@@ -291,10 +291,10 @@ function solveQuadraticWithRHS() {
 }
 
 function howLongPastPoint() {
-    x = createQuadratic(quadraticRandom(), quadraticRandom());
-    yValue = random(1, 10);
-    answer = quadraticFormula(x.a, x.b, x.c);
-    answer = answer[0] - answer[1];
+    var x = createQuadratic(quadraticRandom(), quadraticRandom());
+    var yValue = random(1, 10);
+    var answer = quadraticFormula(x.a, x.b, x.c);
+    var answer = answer[0] - answer[1];
     x.c = x.c + yValue;
     return {
         questionText: randomName() + " kicks a ball. The flight path of the ball can be modelled by y = " + renderQuadratic(x.a, x.b, x.c) + ", where x and y are measured in metres. For how many metres of the horizontal distance that the ball travels will it be " + yValue + " metres or more above the ground?",
@@ -304,8 +304,8 @@ function howLongPastPoint() {
 }
 
 function whenNegative() {
-    x = createQuadratic(quadraticRandom(), quadraticRandom());
-    answer1Greater = false;
+    var x = createQuadratic(quadraticRandom(), quadraticRandom());
+    var answer1Greater = false;
     if (x.answer2 - x.answer1 < 0) answer1Greater = true;
     return {
         questionText: "If y = " + renderQuadratic(x.a, x.b, x.c) + ", for what values of x will y be negative?",
@@ -321,9 +321,9 @@ function whenNegative() {
 //-----------------------------------------------------------------------------------------------------------------------------
 
 function solveGivenVariable() {
-    a = randomLetter();b = randomLetter();c = randomLetter();x = randomLetter();
-    aValue = random(scalingRange(1, 12), scalingRange(1, 12, false));bValue = random(scalingRange(1, 12), scalingRange(1, 12, false));xValue = random(scalingRange(1, 12), scalingRange(1, 12, false));
-    aShown = true;
+    var a = randomLetter(); var b = randomLetter(); var c = randomLetter(); var x = randomLetter();
+    var aValue = random(scalingRange(1, 12), scalingRange(1, 12, false)); var bValue = random(scalingRange(1, 12), scalingRange(1, 12, false)); var xValue = random(scalingRange(1, 12), scalingRange(1, 12, false));
+    var aShown = true;
     if (coinflip) {
         a = aValue;
     } else {
@@ -338,11 +338,11 @@ function solveGivenVariable() {
 }
 
 function rearrangeEquations() {
-    aLetter = randomLetter();bLetter = randomLetter();
-    aIsF = coinflip ? true : false;bIsF = coinflip ? true : false;
-    aQuadratic = aIsF ? createFQuadratic(quadraticRandom(), quadraticRandom()) : createQuadratic(quadraticRandom(), quadraticRandom());
-    bQuadratic = bIsF ? createFQuadratic(quadraticRandom(), quadraticRandom()) : createQuadratic(quadraticRandom(), quadraticRandom());
-    addToA = random(2, 10);addToB = [NaN, NaN];
+    var aLetter = randomLetter(); var bLetter = randomLetter();
+    var aIsF = coinflip ? true : false; var bIsF = coinflip ? true : false;
+    var aQuadratic = aIsF ? createFQuadratic(quadraticRandom(), quadraticRandom()) : createQuadratic(quadraticRandom(), quadraticRandom());
+    var bQuadratic = bIsF ? createFQuadratic(quadraticRandom(), quadraticRandom()) : createQuadratic(quadraticRandom(), quadraticRandom());
+    var addToA = random(2, 10); var addToB = [NaN, NaN];
     if (aQuadratic.a != bQuadratic.a) addToB[0] = aQuadratic.a - bQuadratic.a;
     if (aQuadratic.b != bQuadratic.b) addToB[1] = aQuadratic.b - bQuadratic.b;
     return {
@@ -353,7 +353,7 @@ function rearrangeEquations() {
 }
 
 function rearrangeWithRoot() {
-    rhs = randomLetter();coefficient = random(2, 4);solveFor = randomLetter();denominator = random(2, 15);
+    var rhs = randomLetter(); var coefficient = random(2, 4); var solveFor = randomLetter(); var denominator = random(2, 15);
     return {
         questionText: "The formula " + toLatex(rhs + "=" + coefficient + "\\sqrt{\\frac{" + solveFor + "}{" + denominator + "}}") + " solves for " + rhs + ". Rearrange the formula to solve for " + solveFor + ".",
         answers: ["(" + denominator + rhs + "^2)/" + coefficient + "^2=" + solveFor, solveFor + "=(" + denominator + rhs + "^2)/" + coefficient + "^2", "(" + denominator + rhs + "^2)/" + Math.pow(coefficient, 2) + "=" + solveFor, solveFor + "=(" + denominator + rhs + "^2)/" + Math.pow(coefficient, 2)],
@@ -362,8 +362,8 @@ function rearrangeWithRoot() {
 }
 
 function algebraicWordQuestions() {
-    firstTime = random(2, 5);firstCharge = random(5, 15);additionalHours = random(3, 10);additionalCost = random(1, 5);
-    name1 = randomName();
+    var firstTime = random(2, 5); var firstCharge = random(5, 15); var additionalHours = random(3, 10); var additionalCost = random(1, 5);
+    var name1 = randomName();
     return {
         questionText: name1 + " hired a bike for a ride. It cost $" + firstCharge + " for " + firstTime + " hours, and then $" + additionalCost + " for every additional hour. The ride cost $" + (firstCharge + additionalHours * additionalCost) + ". How long did " + name1 + " hire the bike?",
         answers: [(additionalHours + firstTime).toString(), additionalHours + firstTime + "h", additionalHours + firstTime + "hours"],
@@ -372,9 +372,9 @@ function algebraicWordQuestions() {
 }
 
 function simplify() {
-    letter1 = randomLetter();letter2 = randomLetter();
-    termsOnTop = random(scalingRange(2, 4), scalingRange(2, 4, false));
-    coefficients = [];letter1s = [];letter2s = [];terms = [];
+    var letter1 = randomLetter(); var letter2 = randomLetter();
+    var termsOnTop = random(scalingRange(2, 4), scalingRange(2, 4, false));
+    var coefficients = []; var letter1s = []; var letter2s = []; var terms = [];
     for (var _i2 = 0; _i2 < termsOnTop + 1; _i2++) {
         coefficients.push(random(2, 4));
         if (_i2 == termsOnTop - 2) coefficients[coefficients.length - 1] = 1;
@@ -384,18 +384,18 @@ function simplify() {
     if (!!letter1s.reduce(function (a, b) {
         return a === b ? a : NaN;
     })) letter1s[0] += 1;
-    letter1sToSubtract = Math.min.apply(Math, _toConsumableArray(letter1s));
-    letter2sToSubtract = Math.min.apply(Math, _toConsumableArray(letter2s));
-    topText = "";
+    var letter1sToSubtract = Math.min.apply(Math, _toConsumableArray(letter1s));
+    var letter2sToSubtract = Math.min.apply(Math, _toConsumableArray(letter2s));
+    var topText = "";
     for (var _i3 in terms) {
         if (_i3 < termsOnTop) topText += terms[_i3];
-    }answerTerms = [];
+    } var answerTerms = [];
     for (var _i4 = 0; _i4 < coefficients.length; _i4++) {
         answerTerms[_i4] = hideIfOne(coefficients[_i4]);
         answerTerms[_i4] += letter1s[_i4] - letter1sToSubtract > 0 ? letter1s[_i4] - letter1sToSubtract > 1 ? letter1 + "^" + (letter1s[_i4] - letter1sToSubtract) : letter1 : "";
         answerTerms[_i4] += letter2s[_i4] - letter2sToSubtract > 0 ? letter2s[_i4] - letter2sToSubtract > 1 ? letter2 + "^" + (letter2s[_i4] - letter2sToSubtract) : letter2 : "";
     }
-    answerText = "";
+    var answerText = "";
     for (var _i5 = 0; _i5 < answerTerms.length - 1; _i5++) {
         answerText += (_i5 != 0 ? "+" : "") + answerTerms[_i5];
     }
@@ -413,10 +413,10 @@ function simplify() {
 //-----------------------------------------------------------------------------------------------------------------------------
 
 function rawNumeric() {
-    x = randomLetter();y = randomLetter();
-    xValue = random(scalingRange(1, 12), scalingRange(1, 12, false));yValue = random(scalingRange(1, 12), scalingRange(1, 12, false));
-    a = random(scalingRange(1, 8), scalingRange(1, 8, false));b = random(scalingRange(1, 8), scalingRange(1, 8, false));d = random(scalingRange(1, 8), scalingRange(1, 8, false));e = random(scalingRange(1, 8), scalingRange(1, 8, false));
-    c = a * xValue + b * yValue;f = d * xValue + e * yValue;
+    var x = randomLetter(); var y = randomLetter();
+    var xValue = random(scalingRange(1, 12), scalingRange(1, 12, false)); var yValue = random(scalingRange(1, 12), scalingRange(1, 12, false));
+    var a = random(scalingRange(1, 8), scalingRange(1, 8, false)); var b = random(scalingRange(1, 8), scalingRange(1, 8, false)); var d = random(scalingRange(1, 8), scalingRange(1, 8, false)); var e = random(scalingRange(1, 8), scalingRange(1, 8, false));
+    var c = a * xValue + b * yValue; var f = d * xValue + e * yValue;
     return {
         questionText: "If " + toLatex(hideIfOne(a) + x + hideIfOne(b, false) + y + "=" + c) + " and " + toLatex(hideIfOne(d) + x + hideIfOne(e, false) + y + "=" + f) + ", what is the value of " + x + "?",
         answers: [xValue.toString()],
@@ -425,10 +425,10 @@ function rawNumeric() {
 }
 
 function exchange() {
-    twiceMoney = random(70, 150, false, 2);
-    shift = random(4, 30, false, 2);
-    answer1 = twiceMoney - shift;answer2 = twiceMoney / 2 + shift;
-    name1 = randomName();name2 = randomName();
+    var twiceMoney = random(70, 150, false, 2);
+    var shift = random(4, 30, false, 2);
+    var answer1 = twiceMoney - shift; var answer2 = twiceMoney / 2 + shift;
+    var name1 = randomName(); var name2 = randomName();
     return {
         questionText: name1 + " has more money than " + name2 + ". If " + name1 + " gave " + name2 + " $" + (answer1 - answer2) / 2 + ", they would have the same amount. If instead " + "" + name2 + " gave " + name1 + " $" + shift + ", " + name1 + " would have twice as much as " + name2 + ". How much money does each person actually have?",
         answers: [answer1 + "," + answer2, answer2 + "," + answer1, "$" + answer1 + "," + "$" + answer2, "$" + answer2 + "," + "$" + answer1],
@@ -437,9 +437,9 @@ function exchange() {
 }
 
 function ratios() {
-    speed1 = 25 - random(2, 15, false, 2);speed2 = 25 - speed1;
-    distance = random(5, 20);
-    name1 = randomName();name2 = randomName();
+    var speed1 = 25 - random(2, 15, false, 2); var speed2 = 25 - speed1;
+    var distance = random(5, 20);
+    var name1 = randomName(); var name2 = randomName();
     return {
         questionText: name1 + " and " + name2 + " live " + distance + "km away from each other. " + name1 + " skateboards " + speed1 + "km in the same time as " + name2 + " rides his" + " bike " + speed2 + "km. If they both leave home at the same time and travel towards each other, how far from " + name2 + "'s home will they meet?",
         answers: [(distance * 100 / 25 * speed2 / 100).toString(), distance * 100 / 25 * speed2 / 100 + "km"],
@@ -454,12 +454,12 @@ function ratios() {
 //-----------------------------------------------------------------------------------------------------------------------------
 
 function solveConversionsToPowers() {
-    termWithX = random(1, 4);
-    base = random(2, 5);
-    firstTermPower = random(2, 3);
-    firstTerm = Math.pow(base, firstTermPower);
-    rhsPower = random(2, 4);
-    rhs = Math.pow(base, rhsPower);
+    var termWithX = random(1, 4);
+    var base = random(2, 5);
+    var firstTermPower = random(2, 3);
+    var firstTerm = Math.pow(base, firstTermPower);
+    var rhsPower = random(2, 4);
+    var rhs = Math.pow(base, rhsPower);
     return {
         questionText: toLatex(firstTerm + "*" + base + "^" + "{x" + addPlus(termWithX) + "}=" + rhs),
         answers: [(rhsPower - termWithX - firstTermPower).toString()],
@@ -468,8 +468,8 @@ function solveConversionsToPowers() {
 }
 
 function solveRemovingBases() {
-    x = createQuadratic(quadraticRandom(), quadraticRandom());
-    base = random(scalingRange(2, 7), scalingRange(2, 7, false));
+    var x = createQuadratic(quadraticRandom(), quadraticRandom());
+    var base = random(scalingRange(2, 7), scalingRange(2, 7, false));
     return {
         questionText: toLatex(base + "^{" + x.b * -1 + "x" + addPlus(x.c * -1) + "}=" + base + "^{x^{2}}") + ". Find the value(s) of x.",
         answers: [x.answer1 + "," + x.answer2, x.answer2 + "," + x.answer1],
@@ -478,12 +478,12 @@ function solveRemovingBases() {
 }
 
 function powerInequalities() {
-    termWithX = random(-2, 1);
-    base = random(2, 4);
-    firstTerm = random(2, 5);
-    rhs = random(90, 120);
-    result = -1;
-    answers = [];
+    var termWithX = random(-2, 1);
+    var base = random(2, 4);
+    var firstTerm = random(2, 5);
+    var rhs = random(90, 120);
+    var result = -1;
+    var answers = [];
     for (var _i6 = 1; result < rhs / firstTerm; _i6++) {
         result = Math.pow(base, _i6 + termWithX);
         if (result < rhs / firstTerm) answers.push(_i6);

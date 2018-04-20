@@ -1,3 +1,4 @@
+
 /*
 $(document).click(function(e) {
     if($(".questionPane").hasClass("visible")) {
@@ -18,7 +19,9 @@ $("li").click(function(e) {
     }
 });
 */
-hasScrolled = false;
+var questionNames = ["Solve Quadratics", "Solve Quadratics With RHS", "Factorise Quadratics", "Expand Quadratics", "Simplify Fractions", "Solve Fractions", "Find One Value For x", "Find Value At Point", "Find Time Past Point", "Find When Quadratic Is Negative", "Solve Given Variable", "Rearrange Equations", "Rearrange Equations With Root", "Algebraic Word Questions", "Remove Common Factors", "Simple Simultaneous Equations", "Simultaneous Equations 1", "Simultaneous Equations 2", "Solve Powers", "Solve Removing Bases", "Power Inequalities", "Wildcard Questions"];
+
+var hasScrolled = false;
 $(window).scroll(function() {
     hasScrolled = true;
 });
@@ -30,11 +33,11 @@ setTimeout(function() {
     }
 }, 1500);
 
-visible = false;
-wildcard = false;
-selectedQuestion = NaN;
-userAnswer = NaN;
-currentQuestion = NaN;
+var visible = false;
+var wildcard = false;
+var selectedQuestion = NaN;
+var userAnswer = NaN;
+var currentQuestion = NaN;
 
 $(document).click(function(event) {
     if($(event.target).closest("li").length) {
@@ -63,10 +66,23 @@ $(document).click(function(event) {
     } else $(".explanationPane").addClass("hidden");
 });
 
+$(document).keypress(function(event) {
+    if(event.which == 13) {
+        $(".inputBox").trigger('submit');
+    }
+});
+
+var includes = false;
 $(".inputBox").submit(function(event) {
-    userAnswer = $(".inputBox input").val().replace(/ /g, '');
+    var userAnswer = $(".inputBox input").val().replace(/ /g, '');
     $(".inputBox input").val("");
-    if(currentQuestion.answers.includes(userAnswer)) {
+    for(let i = 0; i < currentQuestion.answers.length; i ++) {
+        if(currentQuestion.answers[i] === userAnswer) {
+            includes = true;
+            break;
+        }
+    }
+    if(includes) {
         $(".inputBox input").addClass("correct");
         if(currentDifficulty < 9) currentDifficulty += 0.25;
         $(".difficultyArrow").css('bottom', (currentDifficulty / 9) * 95 + '%');
@@ -85,6 +101,7 @@ $(".inputBox").submit(function(event) {
             $(".inputBox input").removeClass("incorrect");
         }, 1000);
     }
+    includes = false;
     return false;
 });
 
