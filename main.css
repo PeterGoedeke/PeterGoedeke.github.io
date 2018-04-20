@@ -223,6 +223,13 @@ input {
         font-size: 5vw;
     }
 }
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    select,
+    textarea,
+    input {
+        font-size: 16px;
+    }
+}
 
 .aligner {
     display: inline-block;
