@@ -47,9 +47,8 @@ $(document).click(function(event) {
         if(selectedQuestion == 21) wildcard = true; else wildcard = false;
         $(".questionPaneHeading").text(questionNames[selectedQuestion]);
         refreshQuestion();
-        $(".inputBox input").val("E.g. " + exampleFormats[selectedQuestion]);
+        $(".inputBox input").attr("placeholder", exampleFormats[selectedQuestion]);
         $(".inputBox input").focus();
-        $(".inputBox input").select();
     } else if(visible) {
         if(!$(event.target).closest(".questionPane").length) {
             $(".questionPane").addClass("hidden");
@@ -90,14 +89,16 @@ $(".inputBox").submit(function(event) {
 });
 
 function refreshQuestion() {
-    currentQuestion = wildcard ? questions[Math.floor(Math.random() * questions.length)]() : questions[selectedQuestion]();
+    selectedQuestion = wildcard ? Math.floor(Math.random() * questions.length) : selectedQuestion;
+    currentQuestion = questions[selectedQuestion]();
     $(".displayArea").html("<div>" + currentQuestion.questionText + "</div>");
     $(".displayArea").css('color', 'red'); MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$(".displayArea").css('color', 'black');});
+    $(".inputBox input").attr("placeholder", exampleFormats[selectedQuestion]);
     console.log(currentQuestion.answers);
 }
 
 $("input").on('focus', function() {
-    if($(window).width() <= 480) $(".inputBox").css('bottom', '15%');
+    if($(window).width() <= 480) $(".inputBox").css('bottom', '10%');
     else $(".inputBox").css('bottom', '1%');
 });
 $("input").on('focusout', function() {
