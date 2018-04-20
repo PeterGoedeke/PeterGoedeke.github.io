@@ -41,7 +41,7 @@ $(document).click(function(event) {
         $(".questionPane").removeClass("hidden");
         $(".inputBox").removeClass("hidden");
         visible = true;
-        currentDifficulty = 0;
+        currentDifficulty = 9;
         console.log(currentDifficulty);
         selectedQuestion = event.target.id;
         if(selectedQuestion == 21) wildcard = true; else wildcard = false;
@@ -69,7 +69,7 @@ $(".inputBox").submit(function(event) {
     if(currentQuestion.answers.includes(userAnswer)) {
         $(".inputBox input").addClass("correct");
         if(currentDifficulty < 9) currentDifficulty += 0.25;
-        $(".difficultyArrow").css('bottom', currentDifficulty / 9 * 100 - 5 + '%');
+        $(".difficultyArrow").css('bottom', (currentDifficulty / 9) * 95 + '%');
         console.log(currentDifficulty);
         setTimeout(function() {
             $(".inputBox input").removeClass("correct");
@@ -80,7 +80,7 @@ $(".inputBox").submit(function(event) {
         $(".displayArea").css('color', 'red'); MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$(".displayArea").css('color', 'black');});
         $(".inputBox input").addClass("incorrect");
         if(currentDifficulty >= 2) currentDifficulty -= 2.25; else currentDifficulty = 0;
-        $(".difficultyArrow").css('bottom', currentDifficulty / 9 * 100 - 5 + '%');
+        $(".difficultyArrow").css('bottom', (currentDifficulty / 9) * 95 + '%');
         setTimeout(function() {
             $(".inputBox input").removeClass("incorrect");
         }, 1000);
