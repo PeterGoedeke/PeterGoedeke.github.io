@@ -97,8 +97,10 @@ function refreshQuestion() {
 }
 
 $("input").on('focus', function() {
-    if($("window").width() <= 500) {
+    console.log("test1");
+    if($(window).width() <= 500) {
         $(".inputBox").css('bottom', '15%');
+        console.log("test");
     }
 });
 
