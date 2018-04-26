@@ -71,6 +71,7 @@ li {
     border-radius: 5px;
     border: solid lightgrey 1px;
     margin: 5px 0 5px 0;
+    transition: 0.25s;
 }
 li:hover, .tab:hover, .back:hover, .backe:hover {
     cursor: pointer;
