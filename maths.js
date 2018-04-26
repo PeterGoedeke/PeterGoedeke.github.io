@@ -174,7 +174,6 @@ function createQuadraticFraction() {
     var answerTop = random(scalingRange(2, 10), scalingRange(2, 10, false), true);
     do {
         var answerBottom = random(scalingRange(2, 10), scalingRange(2, 10, false), true);
-        console.log(answerBottom + " " + answerTop + " " + commonAnswer);
     } while (answerBottom == commonAnswer || answerBottom == commonAnswer * -1 || answerBottom == answerTop || answerBottom == answerTop * -1);
     return {
         answerTop: answerTop,
@@ -201,7 +200,7 @@ function factoriseQuadratic() {
     var questionType = random(0, 3);
     return {
         questionText: questionType == 0 ? "Factorise " + renderQuadratic(x.a, x.b, x.c) : questionType == 1 ? "The area of a rectangle is " + renderQuadratic(x.a, x.b, x.c) + ", what are the lengths of the sides in terms of x?" : questionType == 2 ? "A rectangle has the area of " + renderQuadratic(x.a, x.b, x.c) + ", state the width and length of this rectangle in terms of x." : "The area of a rectange can be represented by " + renderQuadratic(x.a, x.b, x.c) + ", what are the lengths of the sides in terms of x?",
-        answers: ["(" + hideIfOne(x.a) + "x" + addPlus(x.workingAnswer2) + ")(x" + addPlus(x.answer1 * -1, false) + ")", "(x" + addPlus(x.answer1 * -1, false) + ")(" + hideIfOne(x.a) + "x" + addPlus(x.workingAnswer2) + ")", "(" + hideIfOne(x.a) + "x" + addPlus(x.workingAnswer1) + ")(x" + addPlus(x.answer2 * -1, false) + ")", "(x" + addPlus(x.answer2 * -1, false) + ")(" + hideIfOne(x.a) + "x" + addPlus(x.workingAnswer1) + ")"],
+        answers: x.a == 1 ? ["(x" + addPlus(x.answer1 * -1) + ")(x" + addPlus(x.answer2 * -1) + ")", "(x" + addPlus(x.answer2 * -1) + ")(x" + addPlus(x.answer1 * -1 ) + ")"] : ["(" + x.a + "x" + addPlus(x.workingAnswer2) + ")(x" + addPlus(x.answer1 * -1) + ")", "(x" + addPlus(x.answer1 * -1) + ")(" + x.a + "x" + addPlus(x.workingAnswer2) + ")", "(" + x.a + "x" + addPlus(x.workingAnswer1) + ")(x" + addPlus(x.answer2 * -1) + ")", "(x" + addPlus(x.answer2 * -1) + ")(" + x.a + "x" + addPlus(x.workingAnswer1) + ")"],
         stepsOfWorking: [renderQuadratic(x.a, x.b, x.c) + "\n1. Find the two numbers which add to equal the coefficient of x and the constant. These are " + x.answer1 * -1 + " and " + x.answer2 * -1 + "\n2. Put each number in a set of brackets with x, \\((x" + addPlus(x.answer1 * -1) + ")(x" + addPlus(x.answer2 * -1) + ")\\)", renderQuadratic(x.a, x.b, x.c) + "\n1. Find the product of the coefficient of \\(x^2\\) and the constant, " + x.a * x.c + "\n2. Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, " + x.workingAnswer1 + " and " + x.workingAnswer2 + "\n3. Split the coefficient of x into these two numbers, \\(" + x.a + "x^2" + hideIfOne(x.workingAnswer1, false) + "x" + hideIfOne(x.workingAnswer2, false) + "x" + addPlus(x.c) + "\\)\n4. Factorise the first two terms and the last two terms," + "\\(" + x.a + "x(x" + addPlus(x.workingAnswer1 / x.a) + ")" + addPlus(x.workingAnswer2) + "(x" + addPlus(x.c / x.workingAnswer2) + ")\\)\n5. Finish factorisation, \\((" + x.a + "x" + addPlus(x.workingAnswer2) + ")(x" + addPlus(x.answer1 * -1) + ")\\)\n6. This is your answer.", x.workingIndex]
     };
 }

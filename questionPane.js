@@ -44,7 +44,7 @@ $(document).click(function(event) {
         $(".questionPane").removeClass("hidden");
         $(".inputBox").removeClass("hidden");
         visible = true;
-        currentDifficulty = 0;
+        currentDifficulty = 9;
         console.log(currentDifficulty);
         selectedQuestion = event.target.id;
         if(selectedQuestion == 21) wildcard = true; else wildcard = false;
