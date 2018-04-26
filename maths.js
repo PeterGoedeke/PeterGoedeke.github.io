@@ -170,11 +170,12 @@ function createFQuadratic(answer1, answer2) {
 }
 
 function createQuadraticFraction() {
-    var commonAnswer = random(scalingRange(2, 6), scalingRange(2, 6, false), true);
-    var answerTop = random(scalingRange(2, 6), scalingRange(2, 6, false), true);
+    var commonAnswer = random(scalingRange(2, 10), scalingRange(2, 10, false), true);
+    var answerTop = random(scalingRange(2, 10), scalingRange(2, 10, false), true);
     do {
-        var answerBottom = random(scalingRange(2, 6), scalingRange(2, 6, false), true);
-    } while (answerBottom == commonAnswer || answerBottom == commonAnswer * -1);
+        var answerBottom = random(scalingRange(2, 10), scalingRange(2, 10, false), true);
+        console.log(answerBottom + " " + answerTop + " " + commonAnswer);
+    } while (answerBottom == commonAnswer || answerBottom == commonAnswer * -1 || answerBottom == answerTop || answerBottom == answerTop * -1);
     return {
         answerTop: answerTop,
         answerBottom: answerBottom,
