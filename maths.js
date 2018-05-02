@@ -1,113 +1,93 @@
 "use strict";
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-var ALPHABET = "abcdefghijklmnopqrstuvwxyz";
-var lastLetter = "a";
-function randomLetter() {
-    do {
-        var letter = ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
-    } while (letter == lastLetter);
-    lastLetter = letter;
-    return letter;
-}
-
-var NAMES = ["Thanh", "Clifton", "Vincent", "Len", "Orlando", "Marcel", "Christoper", "Granville", "Brenton", "Buford", "Jerry", "Michal", "Corey", "Simon", "Marvin", "Gerry", "Rufus", "Darrell", "Benton", "Jonathon", "Gerardo", "Deangelo", "Gabriel", "Bill", "Carol", "Demetrius", "Sammie", "Wendell", "Tim", "Jermaine", "Trey", "Scott", "Jamar", "Jacob", "Gus", "Alvaro", "Luther", "Weston", "Rodolfo", "Mac", "Branden", "Julio", "Royce", "Malcolm", "Ramiro", "Kelvin", "Elliot", "Ethan", "Waldo", "Joesph"];
-var lastName = "Thanh";
-function randomName() {
-    do {
-        name = NAMES[Math.floor(Math.random() * NAMES.length)];
-    } while (name == lastName);
-    lastName = name;
-    return name;
-}
-
-//---------------------------
-//Decoraters-----------------
-//---------------------------
-function addPlus(term) {
-    return term > 0 ? "+" + term : term;
-}
-
-function toLatex(term) {
-    var block = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-    return block ? "$$" + term + "$$" : "\\(" + term + "\\)";
-}
-
-function hideIfOne(term) {
-    var firstTerm = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
-    var value;
-    if (term == 1) {
-        value = firstTerm ? "" : "+";
-    } else if (term == -1) {
-        value = "-";
-    } else {
-        value = firstTerm ? term : addPlus(term);
-    }
-    return value;
-}
-
-function renderQuadratic(a, b, c) {
-    var block = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
-    return toLatex(hideIfOne(a) + "x^2" + hideIfOne(b, false) + "x" + addPlus(c), block);
-}
-function renderFQuadratic(a, step, answer2) {
-    var block = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
-    return toLatex("(" + hideIfOne(a) + "x" + addPlus(step) + ")(x" + addPlus(answer2) + ")", block);
-}
-
-//---------------------------
-//Mathematics----------------
-//---------------------------
-
-function quadraticFormula(a, b, c) {
-    var result = (-1 * b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
-    var result2 = (-1 * b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
-    return [result, result2];
-}
-
-//---------------------------
-//Randomisers----------------
-//---------------------------
-
-function coinflip() {
-    return Math.random() > 0.5 ? true : false;
-}
-
-var lastValue = random(2, 3);
-//0 = regular, 1 = scaling, 2 = even, 3 = scalingEven
-function random(lower, upper) {
-    var negatives = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-    var type = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-    var chanceOfOne = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
-
-    lower = scalingRange(lower, upper);upper = scalingRange(lower, upper, false);
-    if (Math.random() < chanceOfOne) return 1;
-    do {
-        var value = 0;
-        type % 2 != 0 ? value = Math.floor(Math.abs(Math.random() - Math.random()) * (1 + upper - lower) + lower) : value = Math.floor(Math.random() * (upper - lower + 1) + lower);
-        if (negatives && coinflip()) value = value * -1;
-        if (type > 1 && value % 2 != 0) value++;
-    } while (Math.abs(value) == Math.abs(lastValue));
-    lastValue = value;
-    return value;
-}
-
-function quadraticRandom() {
-    return random(scalingRange(2, 10), scalingRange(2, 10, false), true);
-}
-
 var currentDifficulty = 0;
+
+function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+        for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+            arr2[i] = arr[i];
+        } return arr2;
+    } else {
+        return Array.from(arr);
+    }
+}
+
+var format = (function() {
+    var evaluatePlus = (term) => term > 0 ? "+" + term : term;
+    var wrapLatex = (term, block) => block ? `\$\$${term}\$\$` : `\\(${term}\\)`;
+    var hideIfOne = (term, addPlus = true) => {
+        var value;
+        if(term == 1) value = addPlus ? "+" : "";
+        else if(term == -1) value = "-";
+        else value = addPlus ? evaluatePlus(term) : term;
+        return value;
+    };
+    return {
+        evaluatePlus: evaluatePlus,
+        wrapLatex: wrapLatex,
+        hideIfOne: hideIfOne,
+        quadratic: (a, b, c) => `${hideIfOne(a, false)}x^2${hideIfOne(b)}x${evaluatePlus(c)}`,
+        fQuadratic: (a, step, answer2) => `(${hideIfOne(a, false)}x${addPlus(step)})(x${addPlus(answer2)})`
+    }
+})();
+
+var random = (function() {
+    const ALPHABET = "abcdefghijklmnopqrstuvwxyz";
+    var lastGeneratedLetter = "a";
+    const NAMES = ["Thanh", "Clifton", "Vincent", "Len", "Orlando", "Marcel", "Christoper", "Granville", "Brenton", "Buford", "Jerry", "Michal", "Corey", "Simon", "Marvin", "Gerry", "Rufus", "Darrell", "Benton", "Jonathon", "Gerardo", "Deangelo", "Gabriel", "Bill", "Carol", "Demetrius", "Sammie", "Wendell", "Tim", "Jermaine", "Trey", "Scott", "Jamar", "Jacob", "Gus", "Alvaro", "Luther", "Weston", "Rodolfo", "Mac", "Branden", "Julio", "Royce", "Malcolm", "Ramiro", "Kelvin", "Elliot", "Ethan", "Waldo", "Joesph"];
+    var lastGeneratedName = "Thanh";
+    var lastGeneratedNumber = 2;
+    return {
+        letter: function() {
+            do {
+                var letter = ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+            } while(letter == lastGeneratedLetter);
+            lastGeneratedLetter = letter;
+            return letter;
+        },
+        name: function() {
+            do {
+                name = NAMES[Math.floor(Math.random() * NAMES.length)];
+            } while(name == lastGeneratedName);
+            lastGeneratedName = name;
+            return name;
+        },
+        number: function(lower, upper, negativesEnabled, selectedType, chanceOfOne) {
+            if (Math.random() < chanceOfOne) return 1;
+            var number = 0;
+            do {
+                if(selectedType == "scaling" || selectedType == "scalingEven") {
+                    number = Math.floor(Math.abs(Math.random() - Math.random()) * (1 + upper - lower) + lower)
+                } else {
+                    number = Math.floor(Math.random() * (upper - lower + 1) + lower);
+                }
+                if(negativesEnabled && coinflip()) number *= -1;
+                if(type == "even" || type == "scalingEven") number ++;
+            } while(Math.abs(number == Math.abs(lastGeneratedNumber)));
+            lastGeneratedNumber = number
+            return number;
+        }
+    }
+})();
 function scalingRange(trueLower, trueUpper) {
     var isLower = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     var lower = 0; var upper = 0;
     if (currentDifficulty <= 5) lower = trueLower; else lower = trueLower + (trueUpper - trueLower) / 10 * (currentDifficulty - 5);
     upper = (trueUpper + trueLower) / 2 + (trueUpper - trueLower) / 20 * currentDifficulty;
     return isLower ? lower : upper;
+}
+
+function coinflip() {
+    return Math.random() > 0.5 ? true : false;
+}
+function quadraticRandom() {
+    return generator.randomNumber(scalingRange(2, 10), scalingRange(2, 10, false), true);
+}
+
+function quadraticFormula(a, b, c) {
+    var result = (-1 * b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
+    var result2 = (-1 * b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
+    return [result, result2];
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------
