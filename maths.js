@@ -175,7 +175,7 @@ var generate = (function() {
             };
         },
         simplifyFraction() {
-            
+            var quadratic = stockQuadratic();
         }
     };
 })();
