@@ -138,45 +138,39 @@ var generate = (function() {
             if(questionType) questionText = `Solve ${format.quadratic(quadratic.a, quadratic.b, quadratic.c)} ${format.wrapLatex("=0")}`
             else questionText = `Give the x-coordinates of the points where the graph of ${format.wrapLatex("y =")}${format.quadratic(quadratic.a, quadratic.b, quadratic.c)} cuts the x-axis.`
 
-            var aValueIsOneWorking = `${format.quadratic(quadratic.a, quadratic.b, quadratic.c)}\n(1) Find the two numbers which add to equal the coefficient of x and multiply to equal the constant. These are ${quadratic.answer1 * -1} and ${quadratic.answer2 * -1}\n(2) Multiply these numbers by negative 1 to get your answers, ${quadratic.answer1} and ${quadratic.answer2}.`;
-            var aValueIsNotOneWorking = `${format.quadratic(quadratic.a, quadratic.b, quadratic.c)}\n(1) Find the product of the coefficient of ${format.wrapLatex("x^2")} and the constant, ${quadratic.a * quadratic.c}\n(2) Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, ${quadratic.workingAnswer1} and ${quadratic.workingAnswer2}\n(3) Split the coefficient of x into these two numbers, ${format.wrapLatex(quadratic.a + "x^2" + format.hideIfOne(quadratic.workingAnswer1, false) + "x" + format.hideIfOne(quadratic.workingAnswer2, false) + "x" + format.evaluatePlus(quadratic.c))}\n(4) Factorise the first two terms and the last two terms, ${format.wrapLatex(quadratic.a + "x(x" + format.evaluatePlus(quadratic.workingAnswer1 / quadratic.a) + ")" + format.evaluatePlus(quadratic.workingAnswer2) + "(x" + format.evaluatePlus(quadratic.c / quadratic.workingAnswer2))}\n(5) Finish factorisation, ${format.wrapLatex("(" + quadratic.a + "x" + format.evaluatePlus(quadratic.workingAnswer2) + ")(x" + format.evaluatePlus(quadratic.answer1 * -1) + ")")}\n(6) Find the values for x which make a set of brackets equal to 0. These are ${quadratic.answer1} and ${quadratic.answer2}\n(7) These are your answers.`;
+            var aValueIsOneWorking = `${format.quadratic(quadratic.a, quadratic.b, quadratic.c)}\n(1) Find the two numbers which add to equal the coefficient of x and multiply to equal the constant. These are ${quadratic.answer1 * -1} and ${quadratic.answer2 * -1}\n(2) Multiply these numbers by negative 1 to get your answers, ${quadratic.answer1} and ${quadratic.answer2}.`
+            var aValueIsNotOneWorking = `${format.quadratic(quadratic.a, quadratic.b, quadratic.c)}\n(1) Find the product of the coefficient of ${format.wrapLatex("x^2")} and the constant, ${quadratic.a * quadratic.c}\n(2) Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, ${quadratic.workingAnswer1} and ${quadratic.workingAnswer2}\n(3) Split the coefficient of x into these two numbers, ${format.wrapLatex(quadratic.a + "x^2" + format.hideIfOne(quadratic.workingAnswer1, false) + "x" + format.hideIfOne(quadratic.workingAnswer2, false) + "x" + format.evaluatePlus(quadratic.c))}\n(4) Factorise the first two terms and the last two terms, ${format.wrapLatex(quadratic.a + "x(x" + format.evaluatePlus(quadratic.workingAnswer1 / quadratic.a) + ")" + format.evaluatePlus(quadratic.workingAnswer2) + "(x" + format.evaluatePlus(quadratic.c / quadratic.workingAnswer2))}\n(5) Finish factorisation, ${format.wrapLatex("(" + quadratic.a + "x" + format.evaluatePlus(quadratic.workingAnswer2) + ")(x" + format.evaluatePlus(quadratic.answer1 * -1) + ")")}\n(6) Find the values for x which make a set of brackets equal to 0. These are ${quadratic.answer1} and ${quadratic.answer2}\n(7) These are your answers.`
 
             return {
                 questionText: questionText,
                 answers: [`${quadratic.answer1},${quadratic.answer2}`, `${quadratic.answer2},${quadratic.answer1}`],
                 stepsOfWorking: [aValueIsOneWorking, aValueIsNotOneWorking, quadratic.workingIndex]
             };
-        },
-        factoriseQuadratic() {
-            var quadratic = stockQuadratic();
-            var questionType = random.number(0, 3);
-            
-            var questionText = "";
-            if(questionType == 0) questionText = `Factorise ${format.quadratic(quadratic.a, quadratic.b, quadratic.c)}`;
-            else if(questionType == 1) questionText = `The area of a rectangle is ${format.quadratic(quadratic.a, quadratic.b, quadratic.c)}, what are the lengths of the sides in terms of x?`;
-            else if(questionType == 2) questionText = `A rectangle has the area of ${format.quadratic(quadratic.a, quadratic.b, quadratic.c)}, state the width and length of this rectangle in terms of x.`;
-            else questionText = `The area of a rectangle can be represented by ${format.quadratic(quadratic.a, quadratic.b, quadratic.c)}, what are the lengths of the sides in terms of x?`;
-            
-            var aValueIsOneAnswer1 = `(x${format.evaluatePlus(quadratic.answer1 * -1)})(x${format.evaluatePlus(quadratic.answer2 * -1)})`;
-            var aValueIsOneAnswer2 = `(x${format.evaluatePlus(quadratic.answer2 * -1)})(x${format.evaluatePlus(quadratic.answer1 * -1)})`;
-            
-            var aValueIsNotOneAnswer1 = `(${quadratic.a}x${format.evaluatePlus(quadratic.workingAnswer2)})(x${format.evaluatePlus(quadratic.answer1 * -1)})`;
-            var aValueIsNotOneAnswer2 = `(x${format.evaluatePlus(quadratic.answer1 * -1)})(${quadratic.a}x${format.evaluatePlus(quadratic.workingAnswer2)})`;
-            var aValueIsNotOneAnswer3 = `(${quadratic.a}x${format.evaluatePlus(quadratic.workingAnswer1)})(x${format.evaluatePlus(quadratic.answer2 * -1)})`;
-            var aValueIsNotOneAnswer4 = `(x${format.evaluatePlus(quadratic.answer2 * -1)})(${quadratic.a}x${format.evaluatePlus(quadratic.workingAnswer1)})`;
-            
-            var aValueIsOneWorking = `${format.quadratic(quadratic.a, quadratic.b, quadratic.c)}\n(1) Find the two numbers which add to equal the coefficient of x and the constant. These are ${quadratic.answer1 * -1} and ${quadratic.answer2 * -1}\n(2) Put each number in a set of brackets with x, ${format.wrapLatex(format.evaluatePlus(quadratic.answer1 * -1) + ")(x" + format.evaluatePlus(quadratic.answer2 * -1) + ")")}`;
-           
-            var aValueIsNotOneWorking = `${format.quadratic(quadratic.a, quadratic.b, quadratic.c)}\n(1) Find the product of the coefficient of ${format.wrapLatex("x^2")} and the constant, ${quadratic.a * quadratic.c}\n(2) Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, ${quadratic.workingAnswer1} and ${quadratic.workingAnsewr2}\n(3) Split the coefficient of x into these two numbers, ${format.wrapLatex(quadratic.a + "x^2" + format.hideIfOne(quadratic.workingAnswer1, false) + "" + format.hideIfOne(quadratic.workingAnswer2, false) + "x" + format.evaluatePlus(quadratic.c))}\n(4) Factorise the first two terms and the last two terms, ${format.wrapLatex(quadratic.a + "x(x" + format.evaluatePlus(quadratic.workingAnswer1 / quadratic.a) + ")" + format.evaluatePlus(quadratic.workingAnswer2) + "(" + format.evaluatePlus(quadratic.c / quadratic.workingAnswer2) + ")")}\n(5) Finish factorisation, ${format.wrapLatex(quadratic.a + "x" + format.evaluatePlus(quadratic.workingAnswer2) + ")(x" + format.evaluatePlus(quadratic.answer1 * -1) + ")")}\n(6) This is your answer.`;
-            return {
-                questionText: questionText,
-                answers: quadratic.a == 1 ? [aValueIsOneAnswer1, aValueIsOneAnswer2] : [aValueIsNotOneAnswer1, aValueIsNotOneAnswer2, aValueIsNotOneAnswer3, aValueIsNotOneAnswer4],
-                stepsOfWorking: [aValueIsOneWorking, aValueIsNotOneWorking, quadratic.workingIndex]
-            };
-        },
-        
+        }
     };
 })();
+    
+console.log(generate.solveQuadratic());
+
+function solveQuadratic() {
+    var x = createQuadratic(quadraticRandom(), quadraticRandom());
+    var questionType = coinflip();
+    return {
+        questionText: questionType ? "Solve " + renderQuadratic(x.a, x.b, x.c) + " \\(=0\\)" : "Give the x-coordinates of the points where the graph of y = " + renderQuadratic(x.a, x.b, x.c) + " cuts the x-axis.",
+        answers: [x.answer1 + "," + x.answer2, x.answer2 + "," + x.answer1],
+        stepsOfWorking: [renderQuadratic(x.a, x.b, x.c) + "\n1. Find the two numbers which add to equal the coefficient of x and multiply to equal the constant. These are " + x.answer1 * -1 + " and " + x.answer2 * -1 + ".\n2. Multiply these numbers by negative 1 to get " + x.answer1 + " and " + x.answer2 + "\n3. These are your answers.", renderQuadratic(x.a, x.b, x.c) + "\n1. Find the product of the coefficient of \\(x^2\\) and the constant, " + x.a * x.c + "\n2. Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, " + x.workingAnswer1 + " and " + x.workingAnswer2 + "\n3. Split the coefficient of x into these two numbers, \\(" + x.a + "x^2" + hideIfOne(x.workingAnswer1, false) + "x" + hideIfOne(x.workingAnswer2, false) + "x" + evaluatePlus(x.c) + "\\)\n4. Factorise the first two terms and the last two terms," + "\\(" + x.a + "x(x" + evaluatePlus(x.workingAnswer1 / x.a) + ")" + evaluatePlus(x.workingAnswer2) + "(x" + evaluatePlus(x.c / x.workingAnswer2) + ")\\)\n5. Finish factorisation, \\((" + x.a + "x" + evaluatePlus(x.workingAnswer2) + ")(x" + evaluatePlus(x.answer1 * -1) + ")\\)\n6. Find the values for x which make a set of brackets equal to 0. These are " + x.answer1 + " and " + x.answer2 + "\n7. These are your answers.", x.workingIndex]
+    };
+}
+
+function factoriseQuadratic() {
+    var x = createQuadratic(quadraticRandom(), quadraticRandom());
+    var questionType = random(0, 3);
+    return {
+        questionText: questionType == 0 ? "Factorise " + renderQuadratic(x.a, x.b, x.c) : questionType == 1 ? "The area of a rectangle is " + renderQuadratic(x.a, x.b, x.c) + ", what are the lengths of the sides in terms of x?" : questionType == 2 ? "A rectangle has the area of " + renderQuadratic(x.a, x.b, x.c) + ", state the width and length of this rectangle in terms of x." : "The area of a rectange can be represented by " + renderQuadratic(x.a, x.b, x.c) + ", what are the lengths of the sides in terms of x?",
+        answers: x.a == 1 ? ["(x" + evaluatePlus(x.answer1 * -1) + ")(x" + evaluatePlus(x.answer2 * -1) + ")", "(x" + evaluatePlus(x.answer2 * -1) + ")(x" + evaluatePlus(x.answer1 * -1 ) + ")"] : ["(" + x.a + "x" + evaluatePlus(x.workingAnswer2) + ")(x" + evaluatePlus(x.answer1 * -1) + ")", "(x" + evaluatePlus(x.answer1 * -1) + ")(" + x.a + "x" + evaluatePlus(x.workingAnswer2) + ")", "(" + x.a + "x" + evaluatePlus(x.workingAnswer1) + ")(x" + evaluatePlus(x.answer2 * -1) + ")", "(x" + evaluatePlus(x.answer2 * -1) + ")(" + x.a + "x" + evaluatePlus(x.workingAnswer1) + ")"],
+        stepsOfWorking: [renderQuadratic(x.a, x.b, x.c) + "\n1. Find the two numbers which add to equal the coefficient of x and the constant. These are " + x.answer1 * -1 + " and " + x.answer2 * -1 + "\n2. Put each number in a set of brackets with x, \\((x" + evaluatePlus(x.answer1 * -1) + ")(x" + evaluatePlus(x.answer2 * -1) + ")\\)", renderQuadratic(x.a, x.b, x.c) + "\n1. Find the product of the coefficient of \\(x^2\\) and the constant, " + x.a * x.c + "\n2. Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, " + x.workingAnswer1 + " and " + x.workingAnswer2 + "\n3. Split the coefficient of x into these two numbers, \\(" + x.a + "x^2" + hideIfOne(x.workingAnswer1, false) + "x" + hideIfOne(x.workingAnswer2, false) + "x" + evaluatePlus(x.c) + "\\)\n4. Factorise the first two terms and the last two terms," + "\\(" + x.a + "x(x" + evaluatePlus(x.workingAnswer1 / x.a) + ")" + evaluatePlus(x.workingAnswer2) + "(x" + evaluatePlus(x.c / x.workingAnswer2) + ")\\)\n5. Finish factorisation, \\((" + x.a + "x" + evaluatePlus(x.workingAnswer2) + ")(x" + evaluatePlus(x.answer1 * -1) + ")\\)\n6. This is your answer.", x.workingIndex]
+    };
+}
 
 function simplifyFraction() {
     var x = createQuadraticFraction();
@@ -468,7 +462,7 @@ function powerInequalities() {
     };
 }
 
-var questions = [generate.solveQuadratic, solveQuadraticWithRHS, generate.factoriseQuadratic, expandQuadratic, simplifyFraction, solveFraction, oneValueForX, valueAtPoint, howLongPastPoint, whenNegative, solveGivenVariable, rearrangeEquations, rearrangeWithRoot, algebraicWordQuestions, simplify, rawNumeric, exchange, ratios, solveConversionsToPowers, solveRemovingBases, powerInequalities];
+var questions = [generate.solveQuadratic, solveQuadraticWithRHS, factoriseQuadratic, expandQuadratic, simplifyFraction, solveFraction, oneValueForX, valueAtPoint, howLongPastPoint, whenNegative, solveGivenVariable, rearrangeEquations, rearrangeWithRoot, algebraicWordQuestions, simplify, rawNumeric, exchange, ratios, solveConversionsToPowers, solveRemovingBases, powerInequalities];
 questions.push(questions[0]);
 
 var questionNames = ["Solve Quadratics", "Solve Quadratics With RHS", "Factorise Quadratics", "Expand Quadratics", "Simplify Fractions", "Solve Fractions", "Find One Value For x", "Find Value At Point", "Find Time Past Point", "Find When Quadratic Is Negative", "Solve Given Variable", "Rearrange Equations", "Rearrange Equations With Root", "Algebraic Word Questions", "Remove Common Factors", "Simple Simultaneous Equations", "Simultaneous Equations 1", "Simultaneous Equations 2", "Solve Powers", "Solve Removing Bases", "Power Inequalities", "Wildcard Questions"];
