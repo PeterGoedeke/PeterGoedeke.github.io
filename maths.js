@@ -26,8 +26,8 @@ var format = (function() {
         evaluatePlus: evaluatePlus,
         wrapLatex: wrapLatex,
         hideIfOne: hideIfOne,
-        quadratic: (a, b, c) => `\\(${hideIfOne(a, false)}x^2${hideIfOne(b)}x${evaluatePlus(c)}\\)`,
-        fQuadratic: (a, step, answer2) => `\\((${hideIfOne(a, false)}x${evaluatePlus(step)})(x${evaluatePlus(answer2)})\\)`
+        quadratic: (a, b, c) => `${hideIfOne(a, false)}x^2${hideIfOne(b)}x${evaluatePlus(c)}`,
+        fQuadratic: (a, step, answer2) => `(${hideIfOne(a, false)}x${addPlus(step)})(x${addPlus(answer2)})`
     }
 })();
 
@@ -37,7 +37,6 @@ var random = (function() {
     const NAMES = ["Thanh", "Clifton", "Vincent", "Len", "Orlando", "Marcel", "Christoper", "Granville", "Brenton", "Buford", "Jerry", "Michal", "Corey", "Simon", "Marvin", "Gerry", "Rufus", "Darrell", "Benton", "Jonathon", "Gerardo", "Deangelo", "Gabriel", "Bill", "Carol", "Demetrius", "Sammie", "Wendell", "Tim", "Jermaine", "Trey", "Scott", "Jamar", "Jacob", "Gus", "Alvaro", "Luther", "Weston", "Rodolfo", "Mac", "Branden", "Julio", "Royce", "Malcolm", "Ramiro", "Kelvin", "Elliot", "Ethan", "Waldo", "Joesph"];
     var lastGeneratedName = "Thanh";
     var lastGeneratedNumber = 2;
-    var coinflip = () => Math.random() > 0.5;
     return {
         letter: function() {
             do {
@@ -63,22 +62,32 @@ var random = (function() {
                     number = Math.floor(Math.random() * (upper - lower + 1) + lower);
                 }
                 if(negativesEnabled && coinflip()) number *= -1;
-                if(selectedType == "even" || selectedType == "scalingEven") number ++;
-            } while(Math.abs(number) == Math.abs(lastGeneratedNumber));
+                if(type == "even" || type == "scalingEven") number ++;
+            } while(Math.abs(number == Math.abs(lastGeneratedNumber)));
             lastGeneratedNumber = number
-            console.log(number);
             return number;
-        },
-        coinflip: coinflip
+        }
     }
 })();
-//rewrite
-function scalingRange(trueLower, trueUpper, isLower) {
+function scalingRange(trueLower, trueUpper) {
     var isLower = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     var lower = 0; var upper = 0;
     if (currentDifficulty <= 5) lower = trueLower; else lower = trueLower + (trueUpper - trueLower) / 10 * (currentDifficulty - 5);
     upper = (trueUpper + trueLower) / 2 + (trueUpper - trueLower) / 20 * currentDifficulty;
     return isLower ? lower : upper;
+}
+
+function coinflip() {
+    return Math.random() > 0.5 ? true : false;
+}
+function quadraticRandom() {
+    return generator.randomNumber(scalingRange(2, 10), scalingRange(2, 10, false), true);
+}
+
+function quadraticFormula(a, b, c) {
+    var result = (-1 * b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
+    var result2 = (-1 * b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
+    return [result, result2];
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -88,77 +97,81 @@ function scalingRange(trueLower, trueUpper, isLower) {
 //-----------------------------------------------------------------------------------------------------------------------------
 
 //---------------------------
-//Primary algorithms---------
+//Secondary algorithms-------
 //---------------------------
-
-var generate = (function() {
-    var quadraticFormula = (a, b, c) => [(-1 * b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a), (-1 * b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a)];
-    var stockRandom = () => random.number(scalingRange(2, 10), scalingRange(2, 10, false), true);
-    var stockQuadratic = () => rawQuadratic(stockRandom(), stockRandom());
-
-    function rawQuadratic(answer1, answer2, a = random.number(scalingRange(1, 5), scalingRange(1, 5, false), false, "scaling", 0.2)) {
-        var b = -1 * (a * (answer1 + answer2));
-        var step = -1 * a * answer1
-        var c = a * answer1 * answer2;
-        var complexWorking = a == 1 ? false : true;
-        var step1 = answer1; var step2 = answer2;
-        if(complexWorking) {
-            var step = a * c;
-            var i = 1;
-            while(step1 * step2 != step) {
-                i++;
-                step1 = answer1 * i; step2 = answer2 * i;
-            }
-            step1 *= -1; step2 *= -1;
+function createQuadratic(answer1, answer2) {
+    var a = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : random(scalingRange(1, 5), scalingRange(1, 5, false), false, 1, 0.2);
+    var b = 0; var c = 0;
+    b = a * answer2 * -1 + answer1 * a * -1;
+    c = answer1 * a * -1 * answer2 * -1;
+    var workingIndex = a == 1 ? 0 : 1;
+    var step1 = answer1; var step2 = answer2;
+    if (workingIndex == 1) {
+        var step = a * c;
+        var i = 1;
+        while (step1 * step2 != step && step1 < 1000) {
+            i++;
+            step1 = answer1 * i;step2 = answer2 * i;
         }
-        return {
-            a: a, b: b, c: c, step: step,
-            answer1: answer1, answer2: answer2,
-            workingAnswer1: step1, workingAnswer2: step2,
-            workingIndex: complexWorking ? 1 : 0
-        };
-    }
-    function rawQuadraticFraction() {
-        var commonAnswer = stockRandom(); var answerNumerator = stockRandom();
-        var answerDenominator;
-        while(Math.abs(answerDenominator) == Math.abs(commonAnswer) || Math.abs(answerDenominator) == Math.abs(answerNumerator))
-            answerDenominator = stockRandom();
-        var numeratorQuadratic = rawQuadratic(commonAnswer, answerNumerator);
-        var denominatorQuadratic = rawQuadratic(commonAnswer, answerDenominator);
-        return {
-            fraction: [numeratorQuadratic, denominatorQuadratic]
-        }
+        step1 = step1 * -1;step2 = step2 * -1;
     }
     return {
-        solveQuadratic: function() {
-            var quadratic = stockQuadratic();
-            var questionType = random.coinflip();
-
-            var questionText = "";
-            if(questionType) questionText = `Solve ${format.quadratic(quadratic.a, quadratic.b, quadratic.c)} ${format.wrapLatex("=0")}`
-            else questionText = `Give the x-coordinates of the points where the graph of ${format.wrapLatex("y =")}${format.quadratic(quadratic.a, quadratic.b, quadratic.c)} cuts the x-axis.`
-
-            var aValueIsOneWorking = `${format.quadratic(quadratic.a, quadratic.b, quadratic.c)}\n(1) Find the two numbers which add to equal the coefficient of x and multiply to equal the constant. These are ${quadratic.answer1 * -1} and ${quadratic.answer2 * -1}\n(2) Multiply these numbers by negative 1 to get your answers, ${quadratic.answer1} and ${quadratic.answer2}.`
-            var aValueIsNotOneWorking = `${format.quadratic(quadratic.a, quadratic.b, quadratic.c)}\n(1) Find the product of the coefficient of ${format.wrapLatex("x^2")} and the constant, ${quadratic.a * quadratic.c}\n(2) Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, ${quadratic.workingAnswer1} and ${quadratic.workingAnswer2}\n(3) Split the coefficient of x into these two numbers, ${format.wrapLatex(quadratic.a + "x^2" + format.hideIfOne(quadratic.workingAnswer1, false) + "x" + format.hideIfOne(quadratic.workingAnswer2, false) + "x" + format.evaluatePlus(quadratic.c))}\n(4) Factorise the first two terms and the last two terms, ${format.wrapLatex(quadratic.a + "x(x" + format.evaluatePlus(quadratic.workingAnswer1 / quadratic.a) + ")" + format.evaluatePlus(quadratic.workingAnswer2) + "(x" + format.evaluatePlus(quadratic.c / quadratic.workingAnswer2))}\n(5) Finish factorisation, ${format.wrapLatex("(" + quadratic.a + "x" + format.evaluatePlus(quadratic.workingAnswer2) + ")(x" + format.evaluatePlus(quadratic.answer1 * -1) + ")")}\n(6) Find the values for x which make a set of brackets equal to 0. These are ${quadratic.answer1} and ${quadratic.answer2}\n(7) These are your answers.`
-
-            return {
-                questionText: questionText,
-                answers: [`${quadratic.answer1},${quadratic.answer2}`, `${quadratic.answer2},${quadratic.answer1}`],
-                stepsOfWorking: [aValueIsOneWorking, aValueIsNotOneWorking, quadratic.workingIndex]
-            };
-        }
+        a: a, b: b, c: c,
+        answer1: answer1,
+        answer2: answer2,
+        workingAnswer1: step1,
+        workingAnswer2: step2,
+        workingIndex: workingIndex
     };
-})();
-    
-console.log(generate.solveQuadratic());
+}
 
+function createFQuadratic(answer1, answer2) {
+    var a = random(scalingRange(1, 5), scalingRange(1, 5, false), false, 1, 0.2);
+    var step = a * answer1 * -1;
+    var b = a * answer2 + step;
+    var c = step * answer2 * -1;
+    var workingIndex = a == 1 ? 0 : 1;
+    var step1 = answer1; var step2 = answer2;
+    if (workingIndex == 1) {
+        var step3 = a * c;
+        var i = 1;
+        while (step1 * step2 != step3 && step1 < 1000) {
+            i++;
+            step1 = answer1 * i;step2 = answer2 * i;
+        }
+        step1 = step1 * -1;step2 = step2 * -1;
+    }
+    return {
+        a: a, b: b, c: c, step: step, answer2: answer2,
+        workingAnswer1: step1,
+        workingAnswer2: step2,
+        workingIndex: workingIndex
+    };
+}
+
+function createQuadraticFraction() {
+    var commonAnswer = random(scalingRange(2, 10), scalingRange(2, 10, false), true);
+    var answerTop = random(scalingRange(2, 10), scalingRange(2, 10, false), true);
+    do {
+        var answerBottom = random(scalingRange(2, 10), scalingRange(2, 10, false), true);
+    } while (answerBottom == commonAnswer || answerBottom == commonAnswer * -1 || answerBottom == answerTop || answerBottom == answerTop * -1);
+    return {
+        answerTop: answerTop,
+        answerBottom: answerBottom,
+        commonAnswer: commonAnswer
+    };
+}
+
+//---------------------------
+//Primary algorithms---------
+//---------------------------
 function solveQuadratic() {
     var x = createQuadratic(quadraticRandom(), quadraticRandom());
     var questionType = coinflip();
     return {
         questionText: questionType ? "Solve " + renderQuadratic(x.a, x.b, x.c) + " \\(=0\\)" : "Give the x-coordinates of the points where the graph of y = " + renderQuadratic(x.a, x.b, x.c) + " cuts the x-axis.",
         answers: [x.answer1 + "," + x.answer2, x.answer2 + "," + x.answer1],
-        stepsOfWorking: [renderQuadratic(x.a, x.b, x.c) + "\n1. Find the two numbers which add to equal the coefficient of x and multiply to equal the constant. These are " + x.answer1 * -1 + " and " + x.answer2 * -1 + ".\n2. Multiply these numbers by negative 1 to get " + x.answer1 + " and " + x.answer2 + "\n3. These are your answers.", renderQuadratic(x.a, x.b, x.c) + "\n1. Find the product of the coefficient of \\(x^2\\) and the constant, " + x.a * x.c + "\n2. Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, " + x.workingAnswer1 + " and " + x.workingAnswer2 + "\n3. Split the coefficient of x into these two numbers, \\(" + x.a + "x^2" + hideIfOne(x.workingAnswer1, false) + "x" + hideIfOne(x.workingAnswer2, false) + "x" + evaluatePlus(x.c) + "\\)\n4. Factorise the first two terms and the last two terms," + "\\(" + x.a + "x(x" + evaluatePlus(x.workingAnswer1 / x.a) + ")" + evaluatePlus(x.workingAnswer2) + "(x" + evaluatePlus(x.c / x.workingAnswer2) + ")\\)\n5. Finish factorisation, \\((" + x.a + "x" + evaluatePlus(x.workingAnswer2) + ")(x" + evaluatePlus(x.answer1 * -1) + ")\\)\n6. Find the values for x which make a set of brackets equal to 0. These are " + x.answer1 + " and " + x.answer2 + "\n7. These are your answers.", x.workingIndex]
+        stepsOfWorking: [renderQuadratic(x.a, x.b, x.c) + "\n1. Find the two numbers which add to equal the coefficient of x and multiply to equal the constant. These are " + x.answer1 * -1 + " and " + x.answer2 * -1 + ".\n2. Multiply these numbers by negative 1 to get " + x.answer1 + " and " + x.answer2 + "\n3. These are your answers.", renderQuadratic(x.a, x.b, x.c) + "\n1. Find the product of the coefficient of \\(x^2\\) and the constant, " + x.a * x.c + "\n2. Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, " + x.workingAnswer1 + " and " + x.workingAnswer2 + "\n3. Split the coefficient of x into these two numbers, \\(" + x.a + "x^2" + hideIfOne(x.workingAnswer1, false) + "x" + hideIfOne(x.workingAnswer2, false) + "x" + addPlus(x.c) + "\\)\n4. Factorise the first two terms and the last two terms," + "\\(" + x.a + "x(x" + addPlus(x.workingAnswer1 / x.a) + ")" + addPlus(x.workingAnswer2) + "(x" + addPlus(x.c / x.workingAnswer2) + ")\\)\n5. Finish factorisation, \\((" + x.a + "x" + addPlus(x.workingAnswer2) + ")(x" + addPlus(x.answer1 * -1) + ")\\)\n6. Find the values for x which make a set of brackets equal to 0. These are " + x.answer1 + " and " + x.answer2 + "\n7. These are your answers.", x.workingIndex]
     };
 }
 
@@ -167,8 +180,8 @@ function factoriseQuadratic() {
     var questionType = random(0, 3);
     return {
         questionText: questionType == 0 ? "Factorise " + renderQuadratic(x.a, x.b, x.c) : questionType == 1 ? "The area of a rectangle is " + renderQuadratic(x.a, x.b, x.c) + ", what are the lengths of the sides in terms of x?" : questionType == 2 ? "A rectangle has the area of " + renderQuadratic(x.a, x.b, x.c) + ", state the width and length of this rectangle in terms of x." : "The area of a rectange can be represented by " + renderQuadratic(x.a, x.b, x.c) + ", what are the lengths of the sides in terms of x?",
-        answers: x.a == 1 ? ["(x" + evaluatePlus(x.answer1 * -1) + ")(x" + evaluatePlus(x.answer2 * -1) + ")", "(x" + evaluatePlus(x.answer2 * -1) + ")(x" + evaluatePlus(x.answer1 * -1 ) + ")"] : ["(" + x.a + "x" + evaluatePlus(x.workingAnswer2) + ")(x" + evaluatePlus(x.answer1 * -1) + ")", "(x" + evaluatePlus(x.answer1 * -1) + ")(" + x.a + "x" + evaluatePlus(x.workingAnswer2) + ")", "(" + x.a + "x" + evaluatePlus(x.workingAnswer1) + ")(x" + evaluatePlus(x.answer2 * -1) + ")", "(x" + evaluatePlus(x.answer2 * -1) + ")(" + x.a + "x" + evaluatePlus(x.workingAnswer1) + ")"],
-        stepsOfWorking: [renderQuadratic(x.a, x.b, x.c) + "\n1. Find the two numbers which add to equal the coefficient of x and the constant. These are " + x.answer1 * -1 + " and " + x.answer2 * -1 + "\n2. Put each number in a set of brackets with x, \\((x" + evaluatePlus(x.answer1 * -1) + ")(x" + evaluatePlus(x.answer2 * -1) + ")\\)", renderQuadratic(x.a, x.b, x.c) + "\n1. Find the product of the coefficient of \\(x^2\\) and the constant, " + x.a * x.c + "\n2. Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, " + x.workingAnswer1 + " and " + x.workingAnswer2 + "\n3. Split the coefficient of x into these two numbers, \\(" + x.a + "x^2" + hideIfOne(x.workingAnswer1, false) + "x" + hideIfOne(x.workingAnswer2, false) + "x" + evaluatePlus(x.c) + "\\)\n4. Factorise the first two terms and the last two terms," + "\\(" + x.a + "x(x" + evaluatePlus(x.workingAnswer1 / x.a) + ")" + evaluatePlus(x.workingAnswer2) + "(x" + evaluatePlus(x.c / x.workingAnswer2) + ")\\)\n5. Finish factorisation, \\((" + x.a + "x" + evaluatePlus(x.workingAnswer2) + ")(x" + evaluatePlus(x.answer1 * -1) + ")\\)\n6. This is your answer.", x.workingIndex]
+        answers: x.a == 1 ? ["(x" + addPlus(x.answer1 * -1) + ")(x" + addPlus(x.answer2 * -1) + ")", "(x" + addPlus(x.answer2 * -1) + ")(x" + addPlus(x.answer1 * -1 ) + ")"] : ["(" + x.a + "x" + addPlus(x.workingAnswer2) + ")(x" + addPlus(x.answer1 * -1) + ")", "(x" + addPlus(x.answer1 * -1) + ")(" + x.a + "x" + addPlus(x.workingAnswer2) + ")", "(" + x.a + "x" + addPlus(x.workingAnswer1) + ")(x" + addPlus(x.answer2 * -1) + ")", "(x" + addPlus(x.answer2 * -1) + ")(" + x.a + "x" + addPlus(x.workingAnswer1) + ")"],
+        stepsOfWorking: [renderQuadratic(x.a, x.b, x.c) + "\n1. Find the two numbers which add to equal the coefficient of x and the constant. These are " + x.answer1 * -1 + " and " + x.answer2 * -1 + "\n2. Put each number in a set of brackets with x, \\((x" + addPlus(x.answer1 * -1) + ")(x" + addPlus(x.answer2 * -1) + ")\\)", renderQuadratic(x.a, x.b, x.c) + "\n1. Find the product of the coefficient of \\(x^2\\) and the constant, " + x.a * x.c + "\n2. Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, " + x.workingAnswer1 + " and " + x.workingAnswer2 + "\n3. Split the coefficient of x into these two numbers, \\(" + x.a + "x^2" + hideIfOne(x.workingAnswer1, false) + "x" + hideIfOne(x.workingAnswer2, false) + "x" + addPlus(x.c) + "\\)\n4. Factorise the first two terms and the last two terms," + "\\(" + x.a + "x(x" + addPlus(x.workingAnswer1 / x.a) + ")" + addPlus(x.workingAnswer2) + "(x" + addPlus(x.c / x.workingAnswer2) + ")\\)\n5. Finish factorisation, \\((" + x.a + "x" + addPlus(x.workingAnswer2) + ")(x" + addPlus(x.answer1 * -1) + ")\\)\n6. This is your answer.", x.workingIndex]
     };
 }
 
@@ -177,9 +190,9 @@ function simplifyFraction() {
     var top = createQuadratic(x.answerTop, x.commonAnswer);
     var bottom = createQuadratic(x.answerBottom, x.commonAnswer);
     return {
-        questionText: "Simplify " + wrapLatex("\\frac{" + hideIfOne(top.a) + "x^2" + hideIfOne(top.b, false) + "x" + evaluatePlus(top.c) + "}{" + hideIfOne(bottom.a) + "x^2" + hideIfOne(bottom.b, false) + "x" + evaluatePlus(bottom.c) + "}", true),
-        answers: ["(x" + evaluatePlus(x.answerTop * -1) + ")/(x" + evaluatePlus(x.answerBottom * -1) + ")"],
-        stepsOfWorking: ["This is a prototype version\n" + "(x" + evaluatePlus(x.answerTop * -1) + ")/(x" + evaluatePlus(x.answerBottom * -1) + ")", 0]
+        questionText: "Simplify " + toLatex("\\frac{" + hideIfOne(top.a) + "x^2" + hideIfOne(top.b, false) + "x" + addPlus(top.c) + "}{" + hideIfOne(bottom.a) + "x^2" + hideIfOne(bottom.b, false) + "x" + addPlus(bottom.c) + "}", true),
+        answers: ["(x" + addPlus(x.answerTop * -1) + ")/(x" + addPlus(x.answerBottom * -1) + ")"],
+        stepsOfWorking: ["This is a prototype version\n" + "(x" + addPlus(x.answerTop * -1) + ")/(x" + addPlus(x.answerBottom * -1) + ")", 0]
     };
 }
 
@@ -212,7 +225,7 @@ function solveFraction() {
     answer2 = answer1 == answer2[0] ? answer2[1] : answer2[0];
     numeratorIsX ? numerator = hideIfOne(numerator) + "x" : denominator = hideIfOne(denominator) + "x";
     return {
-        questionText: "Solve " + wrapLatex("\\frac{" + hideIfOne(top.a) + "x^2" + hideIfOne(top.b, false) + "x" + evaluatePlus(top.c) + "}{" + hideIfOne(bottom.a) + "x^2" + hideIfOne(bottom.b, false) + "x" + evaluatePlus(bottom.c) + "}=\\frac{" + numerator + "}{" + denominator + "}", true),
+        questionText: "Solve " + toLatex("\\frac{" + hideIfOne(top.a) + "x^2" + hideIfOne(top.b, false) + "x" + addPlus(top.c) + "}{" + hideIfOne(bottom.a) + "x^2" + hideIfOne(bottom.b, false) + "x" + addPlus(bottom.c) + "}=\\frac{" + numerator + "}{" + denominator + "}", true),
         answers: [answer1 + "," + answer2, answer2 + "," + answer1],
         stepsOfWorking: ["This is a prototype version\n" + (answer1 + ", " + answer2), answer2 + ", " + answer1, 0]
     };
@@ -222,15 +235,15 @@ function expandQuadratic() {
     var x = createFQuadratic(quadraticRandom(), quadraticRandom());
     return {
         questionText: "Expand " + renderFQuadratic(x.a, x.step, x.answer2),
-        answers: [hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x" + evaluatePlus(x.c * -1, false)],
-        stepsOfWorking: ["This is a prototype version\n" + (hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x" + evaluatePlus(x.c * -1, false)), 0]
+        answers: [hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x" + addPlus(x.c * -1, false)],
+        stepsOfWorking: ["This is a prototype version\n" + (hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x" + addPlus(x.c * -1, false)), 0]
     };
 }
 
 function oneValueForX() {
     var x = createQuadratic(random(scalingRange(2, 10), scalingRange(2, 10, false), true, 2), random(scalingRange(2, 10), scalingRange(2, 10, false), true, 2));
     return {
-        questionText: randomName() + " is trying to find a value for c so that " + wrapLatex(hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x + c") + " has only one solution for x. Give the value of c.",
+        questionText: randomName() + " is trying to find a value for c so that " + toLatex(hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x + c") + " has only one solution for x. Give the value of c.",
         answers: [Math.pow(x.b / 2, 2).toString()],
         stepsOfWorking: ["This is a prototype version\n" + Math.pow(x.b / 2, 2), 0]
     };
@@ -240,7 +253,7 @@ function valueAtPoint() {
     var x = createQuadratic(quadraticRandom(), quadraticRandom());
     var point = random(0, 4, true);
     return {
-        questionText: "A parabola has the equation: " + wrapLatex(hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x" + evaluatePlus(x.c)) + ". What is the value of y when x = " + point + "?",
+        questionText: "A parabola has the equation: " + toLatex(hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x" + addPlus(x.c)) + ". What is the value of y when x = " + point + "?",
         answers: [(x.a * Math.pow(point, 2) + x.b * point + x.c).toString()],
         stepsOfWorking: ["This is a prototype version\n" + (x.a * Math.pow(point, 2) + x.b * point + x.c), 0]
     };
@@ -253,7 +266,7 @@ function solveQuadraticWithRHS() {
     return {
         questionText: "A rectangle has an area of " + renderQuadratic(x.a, x.b, x.c) + ". If the area of the rectangle is " + rhs + ", what is the value(s) of x?",
         answers: [x.answer1 + "," + x.answer2, x.answer2 + "," + x.answer1],
-        stepsOfWorking: [renderQuadratic(x.a, x.b, x.c) + "\\(=" + rhs + "\\) \n1. Quadratics can only be solved if the right hand side is equal to 0. Therefore, the first step is to rearrange by subtracting " + rhs + " from both sides.\n" + renderQuadratic(x.a, x.b, x.c - rhs) + "\\(=0\\)" + "\n2. Find the two numbers which add to equal the coefficient of x and multiply to equal the constant. These are " + x.answer1 * -1 + " and " + x.answer2 * -1 + ".\n3. Multiply these numbers by negative 1 to get " + x.answer1 + " and " + x.answer2 + "\n4. These are your answers.", renderQuadratic(x.a, x.b, x.c) + "\\(=" + rhs + "\\) \n1. Quadratics can only be solved if the right hand side is equal to 0. Therefore, the first step is to rearrange by subtracting " + rhs + " from both sides.\n" + renderQuadratic(x.a, x.b, x.c - rhs) + "\\(=0\\)" + "\n2. Find the product of the coefficient of \\(x^2\\) and the constant, " + x.a * (x.c - rhs) + "\n3. Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, " + x.workingAnswer1 + " and " + x.workingAnswer2 + "\n4. Split the coefficient of x into these two numbers, \\(" + x.a + "x^2" + hideIfOne(x.workingAnswer1, false) + "x" + hideIfOne(x.workingAnswer2, false) + "x" + evaluatePlus(x.c - rhs) + "\\)\n5. Factorise the first two terms and the last two terms," + "\\(" + x.a + "x(x" + evaluatePlus(x.workingAnswer1 / x.a) + ")" + evaluatePlus(x.workingAnswer2) + "(x" + evaluatePlus((x.c - rhs) / x.workingAnswer2) + ")\\)\n6. Finish factorisation, \\((" + x.a + "x" + evaluatePlus(x.workingAnswer2) + ")(x" + evaluatePlus(x.answer1 * -1) + ")\\)\n7. Find the values for x which make a set of brackets equal to 0. These are " + x.answer1 + " and " + x.answer2 + "\n8. These are your answers.", x.workingIndex]
+        stepsOfWorking: [renderQuadratic(x.a, x.b, x.c) + "\\(=" + rhs + "\\) \n1. Quadratics can only be solved if the right hand side is equal to 0. Therefore, the first step is to rearrange by subtracting " + rhs + " from both sides.\n" + renderQuadratic(x.a, x.b, x.c - rhs) + "\\(=0\\)" + "\n2. Find the two numbers which add to equal the coefficient of x and multiply to equal the constant. These are " + x.answer1 * -1 + " and " + x.answer2 * -1 + ".\n3. Multiply these numbers by negative 1 to get " + x.answer1 + " and " + x.answer2 + "\n4. These are your answers.", renderQuadratic(x.a, x.b, x.c) + "\\(=" + rhs + "\\) \n1. Quadratics can only be solved if the right hand side is equal to 0. Therefore, the first step is to rearrange by subtracting " + rhs + " from both sides.\n" + renderQuadratic(x.a, x.b, x.c - rhs) + "\\(=0\\)" + "\n2. Find the product of the coefficient of \\(x^2\\) and the constant, " + x.a * (x.c - rhs) + "\n3. Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, " + x.workingAnswer1 + " and " + x.workingAnswer2 + "\n4. Split the coefficient of x into these two numbers, \\(" + x.a + "x^2" + hideIfOne(x.workingAnswer1, false) + "x" + hideIfOne(x.workingAnswer2, false) + "x" + addPlus(x.c - rhs) + "\\)\n5. Factorise the first two terms and the last two terms," + "\\(" + x.a + "x(x" + addPlus(x.workingAnswer1 / x.a) + ")" + addPlus(x.workingAnswer2) + "(x" + addPlus((x.c - rhs) / x.workingAnswer2) + ")\\)\n6. Finish factorisation, \\((" + x.a + "x" + addPlus(x.workingAnswer2) + ")(x" + addPlus(x.answer1 * -1) + ")\\)\n7. Find the values for x which make a set of brackets equal to 0. These are " + x.answer1 + " and " + x.answer2 + "\n8. These are your answers.", x.workingIndex]
     };
 }
 
@@ -298,7 +311,7 @@ function solveGivenVariable() {
         aShown = false;
     }
     return {
-        questionText: "The distance, " + c + " cm, travelled by an object is given by " + wrapLatex(c + "=" + (coinflip ? b + x + "+" + a + x + "^2" : a + x + "^2+" + b + x)) + ". If " + x + " = " + xValue + " and " + (aShown ? b : a) + " = " + (aShown ? bValue : aValue) + ", calculate the distance the object has travelled.",
+        questionText: "The distance, " + c + " cm, travelled by an object is given by " + toLatex(c + "=" + (coinflip ? b + x + "+" + a + x + "^2" : a + x + "^2+" + b + x)) + ". If " + x + " = " + xValue + " and " + (aShown ? b : a) + " = " + (aShown ? bValue : aValue) + ", calculate the distance the object has travelled.",
         answers: [(aValue * Math.pow(xValue, 2) + bValue * xValue).toString(), aValue * Math.pow(xValue, 2) + bValue * xValue + "cm"],
         stepsOfWorking: ["This is a prototype version\n" + (aValue * Math.pow(xValue, 2) + bValue * xValue), 0]
     };
@@ -313,16 +326,16 @@ function rearrangeEquations() {
     if (aQuadratic.a != bQuadratic.a) addToB[0] = aQuadratic.a - bQuadratic.a;
     if (aQuadratic.b != bQuadratic.b) addToB[1] = aQuadratic.b - bQuadratic.b;
     return {
-        questionText: wrapLatex(aLetter + "=") + (aIsF ? renderFQuadratic(aQuadratic.a, aQuadratic.step, aQuadratic.answer2) : renderQuadratic(aQuadratic.a, aQuadratic.b, aQuadratic.c)) + wrapLatex(evaluatePlus(addToA)) + " and " + wrapLatex(bLetter + "=") + (bIsF ? renderFQuadratic(bQuadratic.a, bQuadratic.step, bQuadratic.answer2) : renderQuadratic(bQuadratic.a, bQuadratic.b, bQuadratic.c)) + wrapLatex((isNaN(addToB[0]) ? "" : hideIfOne(addToB[0], false) + "x^2") + (isNaN(addToB[1]) ? "" : hideIfOne(addToB[1], false) + "x")) + ". Give an expression for " + aLetter + " in terms of " + bLetter + ".",
-        answers: [aLetter + "=" + bLetter + evaluatePlus(aQuadratic.c + addToA - bQuadratic.c), bLetter + evaluatePlus(aQuadratic.c + addToA - bQuadratic.c) + "=" + aLetter],
-        stepsOfWorking: ["This is a prototype version\n" + (aLetter + "=" + bLetter + evaluatePlus(aQuadratic.c + addToA - bQuadratic.c)), 0]
+        questionText: toLatex(aLetter + "=") + (aIsF ? renderFQuadratic(aQuadratic.a, aQuadratic.step, aQuadratic.answer2) : renderQuadratic(aQuadratic.a, aQuadratic.b, aQuadratic.c)) + toLatex(addPlus(addToA)) + " and " + toLatex(bLetter + "=") + (bIsF ? renderFQuadratic(bQuadratic.a, bQuadratic.step, bQuadratic.answer2) : renderQuadratic(bQuadratic.a, bQuadratic.b, bQuadratic.c)) + toLatex((isNaN(addToB[0]) ? "" : hideIfOne(addToB[0], false) + "x^2") + (isNaN(addToB[1]) ? "" : hideIfOne(addToB[1], false) + "x")) + ". Give an expression for " + aLetter + " in terms of " + bLetter + ".",
+        answers: [aLetter + "=" + bLetter + addPlus(aQuadratic.c + addToA - bQuadratic.c), bLetter + addPlus(aQuadratic.c + addToA - bQuadratic.c) + "=" + aLetter],
+        stepsOfWorking: ["This is a prototype version\n" + (aLetter + "=" + bLetter + addPlus(aQuadratic.c + addToA - bQuadratic.c)), 0]
     };
 }
 
 function rearrangeWithRoot() {
     var rhs = randomLetter(); var coefficient = random(2, 4); var solveFor = randomLetter(); var denominator = random(2, 15);
     return {
-        questionText: "The formula " + wrapLatex(rhs + "=" + coefficient + "\\sqrt{\\frac{" + solveFor + "}{" + denominator + "}}") + " solves for " + rhs + ". Rearrange the formula to solve for " + solveFor + ".",
+        questionText: "The formula " + toLatex(rhs + "=" + coefficient + "\\sqrt{\\frac{" + solveFor + "}{" + denominator + "}}") + " solves for " + rhs + ". Rearrange the formula to solve for " + solveFor + ".",
         answers: ["(" + denominator + rhs + "^2)/" + coefficient + "^2=" + solveFor, solveFor + "=(" + denominator + rhs + "^2)/" + coefficient + "^2", "(" + denominator + rhs + "^2)/" + Math.pow(coefficient, 2) + "=" + solveFor, solveFor + "=(" + denominator + rhs + "^2)/" + Math.pow(coefficient, 2)],
         stepsOfWorking: ["This is a prototype version\n" + ("(" + denominator + rhs + "^2)/" + coefficient + "^2=" + solveFor), 0]
     };
@@ -367,7 +380,7 @@ function simplify() {
         answerText += (_i5 != 0 ? "+" : "") + answerTerms[_i5];
     }
     return {
-        questionText: "Simplify" + wrapLatex("\\frac{" + topText + "}{" + hideIfOne(coefficients[coefficients.length - 1]) + (letter1s[letter1s.length - 1] > 1 ? letter1 + "^" + letter1s[letter1s.length - 1] : letter1) + (letter2s[letter2s.length - 1] > 1 ? letter2 + "^" + letter2s[letter2s.length - 1] : letter2) + "}", true),
+        questionText: "Simplify" + toLatex("\\frac{" + topText + "}{" + hideIfOne(coefficients[coefficients.length - 1]) + (letter1s[letter1s.length - 1] > 1 ? letter1 + "^" + letter1s[letter1s.length - 1] : letter1) + (letter2s[letter2s.length - 1] > 1 ? letter2 + "^" + letter2s[letter2s.length - 1] : letter2) + "}", true),
         answers: ["(" + answerText + ")/" + answerTerms[answerTerms.length - 1]],
         stepsOfWorking: ["This is a prototype version\n" + ("(" + answerText + ")/" + answerTerms[answerTerms.length - 1]), 0]
     };
@@ -385,7 +398,7 @@ function rawNumeric() {
     var a = random(scalingRange(1, 8), scalingRange(1, 8, false)); var b = random(scalingRange(1, 8), scalingRange(1, 8, false)); var d = random(scalingRange(1, 8), scalingRange(1, 8, false)); var e = random(scalingRange(1, 8), scalingRange(1, 8, false));
     var c = a * xValue + b * yValue; var f = d * xValue + e * yValue;
     return {
-        questionText: "If " + wrapLatex(hideIfOne(a) + x + hideIfOne(b, false) + y + "=" + c) + " and " + wrapLatex(hideIfOne(d) + x + hideIfOne(e, false) + y + "=" + f) + ", what is the value of " + x + "?",
+        questionText: "If " + toLatex(hideIfOne(a) + x + hideIfOne(b, false) + y + "=" + c) + " and " + toLatex(hideIfOne(d) + x + hideIfOne(e, false) + y + "=" + f) + ", what is the value of " + x + "?",
         answers: [xValue.toString()],
         stepsOfWorking: ["This is a prototype version\n" + xValue, 0]
     };
@@ -428,7 +441,7 @@ function solveConversionsToPowers() {
     var rhsPower = random(2, 4);
     var rhs = Math.pow(base, rhsPower);
     return {
-        questionText: wrapLatex(firstTerm + "*" + base + "^" + "{x" + evaluatePlus(termWithX) + "}=" + rhs),
+        questionText: toLatex(firstTerm + "*" + base + "^" + "{x" + addPlus(termWithX) + "}=" + rhs),
         answers: [(rhsPower - termWithX - firstTermPower).toString()],
         stepsOfWorking: ["This is a prototype version\n" + (rhsPower - termWithX - firstTermPower), 0]
     };
@@ -438,7 +451,7 @@ function solveRemovingBases() {
     var x = createQuadratic(quadraticRandom(), quadraticRandom());
     var base = random(scalingRange(2, 7), scalingRange(2, 7, false));
     return {
-        questionText: wrapLatex(base + "^{" + x.b * -1 + "x" + evaluatePlus(x.c * -1) + "}=" + base + "^{x^{2}}") + ". Find the value(s) of x.",
+        questionText: toLatex(base + "^{" + x.b * -1 + "x" + addPlus(x.c * -1) + "}=" + base + "^{x^{2}}") + ". Find the value(s) of x.",
         answers: [x.answer1 + "," + x.answer2, x.answer2 + "," + x.answer1],
         stepsOfWorking: ["This is a prototype version\n" + (x.answer1 + ", " + x.answer2), x.answer2 + ", " + x.answer1, 0]
     };
@@ -456,13 +469,13 @@ function powerInequalities() {
         if (result < rhs / firstTerm) answers.push(_i6);
     }
     return {
-        questionText: "If x is a whole number, for what values of x is " + wrapLatex(firstTerm + "*" + base + "^{x" + evaluatePlus(termWithX) + "}<" + rhs) + "?",
+        questionText: "If x is a whole number, for what values of x is " + toLatex(firstTerm + "*" + base + "^{x" + addPlus(termWithX) + "}<" + rhs) + "?",
         answers: answers.toString(),
         stepsOfWorking: ["This is a prototype version\n" + answers, 0]
     };
 }
 
-var questions = [generate.solveQuadratic, solveQuadraticWithRHS, factoriseQuadratic, expandQuadratic, simplifyFraction, solveFraction, oneValueForX, valueAtPoint, howLongPastPoint, whenNegative, solveGivenVariable, rearrangeEquations, rearrangeWithRoot, algebraicWordQuestions, simplify, rawNumeric, exchange, ratios, solveConversionsToPowers, solveRemovingBases, powerInequalities];
+var questions = [solveQuadratic, solveQuadraticWithRHS, factoriseQuadratic, expandQuadratic, simplifyFraction, solveFraction, oneValueForX, valueAtPoint, howLongPastPoint, whenNegative, solveGivenVariable, rearrangeEquations, rearrangeWithRoot, algebraicWordQuestions, simplify, rawNumeric, exchange, ratios, solveConversionsToPowers, solveRemovingBases, powerInequalities];
 questions.push(questions[0]);
 
 var questionNames = ["Solve Quadratics", "Solve Quadratics With RHS", "Factorise Quadratics", "Expand Quadratics", "Simplify Fractions", "Solve Fractions", "Find One Value For x", "Find Value At Point", "Find Time Past Point", "Find When Quadratic Is Negative", "Solve Given Variable", "Rearrange Equations", "Rearrange Equations With Root", "Algebraic Word Questions", "Remove Common Factors", "Simple Simultaneous Equations", "Simultaneous Equations 1", "Simultaneous Equations 2", "Solve Powers", "Solve Removing Bases", "Power Inequalities", "Wildcard Questions"];
