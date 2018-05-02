@@ -147,7 +147,7 @@ var generate = (function() {
                 stepsOfWorking: [aValueIsOneWorking, aValueIsNotOneWorking, quadratic.workingIndex]
             };
         },
-        factoriseQuadratic() {
+        factoriseQuadratic: function() {
             var quadratic = stockQuadratic();
             var questionType = random.number(0, 3);
             
@@ -174,7 +174,9 @@ var generate = (function() {
                 stepsOfWorking: [aValueIsOneWorking, aValueIsNotOneWorking, quadratic.workingIndex]
             };
         },
-        
+        simplifyFraction() {
+            
+        }
     };
 })();
 
