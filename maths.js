@@ -303,6 +303,27 @@ var generate = (function() {
                     stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}`;
                 }
 
+                else if(question == "solveGivenVariable") {
+                    let [a, b, c, x] = [random.letter(), random.letter(), random.letter(), random.letter()];
+                    let [aValue, bValue, xValue] = [random.number(scalingRange(1, 12), scalingRange(1, 12, false)), random.number(scalingRange(1, 12), scalingRange(1, 12, false)), random.number(scalingRange(1, 12), scalingRange(1, 12, false))];
+                    let aShown = true;
+                    if (random.coinflip()) {
+                        a = aValue;
+                    } else {
+                        b = bValue;
+                        aShown = false;
+                    }
+                    const equation = random.coinflip() ? b + x + "+" + a + x + "^2" : a + x + "^2+" + b + x;
+                    const termToStateValue = aShown ? b : a;
+                    const valueOfTermToState = aShown ? bValue : aValue;
+                    questionText = `The distance, ${c} cm, travelled by an object is given by ${format.wrapLatex(`${c}=${equation}`)}. If ${x}=${xValue} and ${termToStateValue}=${valueOfTermToState}, calculate the distance the object has travelled.`;
+
+                    answers = [(aValue * Math.pow(xValue, 2) + bValue * xValue).toString(), aValue * Math.pow(xValue, 2) + bValue * xValue + "cm"];
+                    stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
+                }
+
+
+
                 return {
                     questionText: questionText,
                     answers: answers,
@@ -312,23 +333,6 @@ var generate = (function() {
     }
     };
 })();
-
-function whenNegative() {
-    var x = createQuadratic(quadraticRandom(), quadraticRandom());
-    var answer1Greater = false;
-    if (x.answer2 - x.answer1 < 0) answer1Greater = true;
-    return {
-        questionText: "If y = " + renderQuadratic(x.a, x.b, x.c) + ", for what values of x will y be negative?",
-        answers: [answer1Greater ? x.answer2 + ">x>" + x.answer1 : x.answer2 + ">x>" + x.answer1, answer1Greater ? x.answer1 + "<x<" + x.answer2 : x.answer1 + "<x<" + x.answer2],
-        stepsOfWorking: ["This is a prototype version\n" + (answer1Greater ? x.answer2 + ">x>" + x.answer1 : x.answer2 + ">x>" + x.answer1), 0]
-    };
-}
-
-//-----------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------
-//Algebraic Expressions algorithms---------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------
 
 function solveGivenVariable() {
     var a = randomLetter(); var b = randomLetter(); var c = randomLetter(); var x = randomLetter();
