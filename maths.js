@@ -17,7 +17,7 @@ var format = (function() {
         wrapLatex: wrapLatex,
         hideIfOne: hideIfOne,
         asQuadratic: (quadratic, wrap = true) => wrap ? `\\(${hideIfOne(quadratic.a, false)}x^2${hideIfOne(quadratic.b)}x${evaluatePlus(quadratic.c)}\\)` : `${hideIfOne(quadratic.a, false)}x^2${hideIfOne(quadratic.b)}x${evaluatePlus(quadratic.c)}`,
-        asfQuadratic: (wrap = true) => `\\((${hideIfOne(a, false)}x${evaluatePlus(step)})(x${evaluatePlus(answer2)})\\)`
+        asfQuadratic: (quadratic, wrap = true) => wrap ? `\\((${hideIfOne(quadratic.a, false)}x${evaluatePlus(quadratic.a == 1 ? quadratic.workingAnswer2 * -1 : quadratic.workingAnswer2)})(x${evaluatePlus(quadratic.answer1 * -1)})\\)` : `(${hideIfOne(quadratic.a, false)}x${evaluatePlus(quadratic.a == 1 ? quadratic.workingAnswer2 * -1 : quadratic.workingAnswer2)})(x${evaluatePlus(quadratic.answer1 * -1)})`
     }
 })();
 
@@ -87,7 +87,7 @@ var generate = (function() {
 
     function rawQuadratic(answer1, answer2, a = random.number(scalingRange(1, 5), scalingRange(1, 5, false), false, "scaling", 0.2)) {
         var b = -1 * (a * (answer1 + answer2));
-        var step = -1 * a * answer1
+        var step = -1 * a * answer1;
         var c = a * answer1 * answer2;
         var complexWorking = a == 1 ? false : true;
         var step1 = answer1; var step2 = answer2;
@@ -103,10 +103,10 @@ var generate = (function() {
         return {
             a: a, b: b, c: c, step: step,
             answer1: answer1, answer2: answer2,
-            workingAnswer1: step1, workingAnswer2: step2,
-            workingIndex: complexWorking ? 1 : 0
+            workingAnswer1: step1, workingAnswer2: step2
         };
     }
+    //Takes a then step then answer2
     function rawQuadraticFraction() {
         var commonAnswer = stockRandom(); var answerNumerator = stockRandom();
         var answerDenominator = stockRandom();
@@ -177,7 +177,7 @@ var generate = (function() {
             (3) This is your answer.` : 
             `${_quadratic}\n
             (1) Find the product of the coefficient of ${format.wrapLatex("x^2")} and the constant, ${AC}\n
-            (2) Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, ${quadratic.workingAnswer1} and ${quadratic.workingAnsewr2}\n
+            (2) Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, ${quadratic.workingAnswer1} and ${quadratic.workingAnswer2}\n
             (3) Split the coefficient of x into these two numbers, ${format.wrapLatex(quadratic.a + "x^2" + format.hideIfOne(quadratic.workingAnswer1, false) + format.hideIfOne(quadratic.workingAnswer2) + "x" + format.evaluatePlus(quadratic.c))}\n
             (4) Factorise the first two terms and the last two terms, ${format.wrapLatex(quadratic.a + "x(x" + format.evaluatePlus(quadratic.workingAnswer1 / quadratic.a) + ")" + format.evaluatePlus(quadratic.workingAnswer2) + "(x" + format.evaluatePlus(quadratic.c / quadratic.workingAnswer2) + ")")}\n
             (5) Finish factorisation, ${format.wrapLatex("(" + quadratic.a + "x" + format.evaluatePlus(quadratic.workingAnswer2) + ")(x" + format.evaluatePlus(_factor1) + ")")}\n
@@ -192,12 +192,12 @@ var generate = (function() {
             var quadraticFraction = rawQuadraticFraction();
             var numeratorQuadratic = quadraticFraction[0];
             var denominatorQuadratic = quadraticFraction[1];
-            var questionText = `Simplify \\(\\frac\{${format.asQuadratic(numeratorQuadratic.a, numeratorQuadratic.b, numeratorQuadratic.c, false)}\}\{${format.asQuadratic(denominatorQuadratic.a, denominatorQuadratic.b, denominatorQuadratic.c, false)}\}\\)`;
+            var questionText = `Simplify \\(\\frac\{${format.asQuadratic(numeratorQuadratic, false)}\}\{${format.asQuadratic(denominatorQuadratic, false)}\}\\)`;
             var answer = `(x${format.evaluatePlus(numeratorQuadratic.answer2 * -1)})/(x${format.evaluatePlus(denominatorQuadratic.answer2 * -1)})`;
             return {
                 questionText: questionText,
                 answers: [answer],
-                stepsOfWorking: [`This is a prototype version. The answer is ${answer}`, 0]
+                stepsOfWorking: `This is a prototype version. The answer is ${answer}`
             }
         },
         solveFraction: function() {
@@ -227,31 +227,32 @@ var generate = (function() {
                 }
             }
 
-            var answer2 = rhsNumeratorContainsX ? quadraticFormula(rhsNumerator, denominatorQuadratic.answer2 * rhsNumerator * -1 - rhsDenominator, rhsDenominator * numeratorQuadratic.answer2) : quadraticFormula(rhsDenominator, numeratorQuadratic.answer2 * rhsDenominator * -1 - rhsNumerator, rhsNumerator * denominatorQuadratic.answer2);
+            var answer2 = rhsNumeratorContainsX ? quadraticFormula(rhsNumerator, denominatorQuadratic.answer2 * rhsNumerator * -1 - rhsDenominator, rhsDenominator * numeratorQuadratic.answer2) : 
+            quadraticFormula(rhsDenominator, numeratorQuadratic.answer2 * rhsDenominator *-1 - rhsNumerator, rhsNumerator * denominatorQuadratic.answer2);
             answer2 = answer1 == answer2[0] ? answer2[1] : answer2[0];
             
-            rhsNumeratorContainsX ? rhsNumerator = format.hideIfOne(rhsNumerator, false) + "x" : rhsDenominator = format.hideIfOne(rhsDenominator, false) + "x";
-            var questionText = `Solve \\(\\frac\{${format.asQuadratic(numeratorQuadratic.a, numeratorQuadratic.b, numeratorQuadratic.c, false)}\}\{${format.asQuadratic(denominatorQuadratic.a, denominatorQuadratic.b, denominatorQuadratic.c, false)}\}=\\frac\{${rhsNumerator}\}\{${rhsDenominator}\}\\)`;
+            rhsNumeratorContainsX ? rhsNumerator = format.hideIfOne(rhsNumerator, false) + "x" :
+            rhsDenominator = format.hideIfOne(rhsDenominator, false) + "x";
+
+            var questionText = `Solve \\(\\frac\{${format.asQuadratic(numeratorQuadratic, false)}\}\{${format.asQuadratic(denominatorQuadratic, false)}\}=\\frac\{${rhsNumerator}\}\{${rhsDenominator}\}\\)`;
             return {
                 questionText: questionText,
                 answers: [answer1 + "," + answer2, answer2 + "," + answer1],
-                stepsOfWorking: [`This is a prototype version. The answers are ${answer1} and ${answer2}`, 0]
+                stepsOfWorking: `This is a prototype version. The answers are ${answer1} and ${answer2}`
             };
         },
         expandQuadratic: function() {
-            
+            reloadQuadratics();
+            var _fQuadratic = format.asfQuadratic(quadratic);
+            var answers = [format.asQuadratic(quadratic, false)];
+            return {
+                questionText: `Expand ${_fQuadratic}`,
+                answers: answers,
+                stepsOfWorking: `This is a prototype version. The answers are ${answers[0]}`
+            }
         }
     };
 })();
-
-function expandQuadratic() {
-    var x = createFQuadratic(quadraticRandom(), quadraticRandom());
-    return {
-        questionText: "Expand " + renderFQuadratic(x.a, x.step, x.answer2),
-        answers: [hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x" + evaluatePlus(x.c * -1, false)],
-        stepsOfWorking: ["This is a prototype version\n" + (hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x" + evaluatePlus(x.c * -1, false)), 0]
-    };
-}
 
 function oneValueForX() {
     var x = createQuadratic(random(scalingRange(2, 10), scalingRange(2, 10, false), true, 2), random(scalingRange(2, 10), scalingRange(2, 10, false), true, 2));
