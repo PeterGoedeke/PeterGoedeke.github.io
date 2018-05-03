@@ -97,7 +97,7 @@ $(".inputBox").submit(function(event) {
         }, 1000);
         refreshQuestion();
     } else {
-        $(".displayArea").html("<div>" + currentQuestion.stepsOfWorking[currentQuestion.stepsOfWorking[currentQuestion.stepsOfWorking.length - 1]] + "</div>");
+        $(".displayArea").html("<div>" + currentQuestion.stepsOfWorking + "</div>");
         $(".displayArea").css('color', 'white'); MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$(".displayArea").css('color', 'black');});
         $(".inputBox input").addClass("incorrect");
         if(currentDifficulty >= 2) currentDifficulty -= 2.25; else currentDifficulty = 0;
