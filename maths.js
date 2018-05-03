@@ -341,6 +341,18 @@ var generate = (function() {
                     stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
                 }
 
+                else if(question == "rearrangeWithRoot") {
+                    let [rhs, solveFor] = [random.letter(), random.letter()];
+                    let [coefficient, denominator] = [random.number(2, 4), random.number(2, 15)];
+
+                    const equation = format.wrapLatex(`${rhs}=${coefficient}\\sqrt\{\\frac\{${solveFor}\}\{${denominator}\}\}`);
+                    questionText = `The formula${equation} solves for ${rhs}. Rearrange the formula to solve for ${solveFor}.`;
+                    
+                    answers = ["(" + denominator + rhs + "^2)/" + coefficient + "^2=" + solveFor, solveFor + "=(" + denominator + rhs + "^2)/" + coefficient + "^2", "(" + denominator + rhs + "^2)/" + Math.pow(coefficient, 2) + "=" + solveFor, solveFor + "=(" + denominator + rhs + "^2)/" + Math.pow(coefficient, 2)];
+                    
+                    stepsOfWorking = `This is a prototype version. The answer is ${answers[3]}.`;
+                }
+
                 return {
                     questionText: questionText,
                     answers: answers,
@@ -350,21 +362,6 @@ var generate = (function() {
     }
     };
 })();
-
-function rearrangeEquations() {
-    var aLetter = randomLetter(); var bLetter = randomLetter();
-    var aIsF = coinflip ? true : false; var bIsF = coinflip ? true : false;
-    var aQuadratic = aIsF ? createFQuadratic(quadraticRandom(), quadraticRandom()) : createQuadratic(quadraticRandom(), quadraticRandom());
-    var bQuadratic = bIsF ? createFQuadratic(quadraticRandom(), quadraticRandom()) : createQuadratic(quadraticRandom(), quadraticRandom());
-    var addToA = random(2, 10); var addToB = [NaN, NaN];
-    if (aQuadratic.a != bQuadratic.a) addToB[0] = aQuadratic.a - bQuadratic.a;
-    if (aQuadratic.b != bQuadratic.b) addToB[1] = aQuadratic.b - bQuadratic.b;
-    return {
-
-        answers: [aLetter + "=" + bLetter + evaluatePlus(aQuadratic.c + addToA - bQuadratic.c), bLetter + evaluatePlus(aQuadratic.c + addToA - bQuadratic.c) + "=" + aLetter],
-        stepsOfWorking: ["This is a prototype version\n" + (aLetter + "=" + bLetter + evaluatePlus(aQuadratic.c + addToA - bQuadratic.c)), 0]
-    };
-}
 
 function rearrangeWithRoot() {
     var rhs = randomLetter(); var coefficient = random(2, 4); var solveFor = randomLetter(); var denominator = random(2, 15);
