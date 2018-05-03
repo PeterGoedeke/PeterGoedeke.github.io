@@ -122,9 +122,12 @@ var generate = (function() {
         question: function(question) {
             return function() {
                 var quadratic = stockQuadratic();
+                if(question == "solveQuadraticWithRHS") quadratic = rawQuadratic(random.number(scalingRange(5, 10), scalingRange(5, 10, false), true), random.number(scalingRange(5, 10), scalingRange(5, 10, false), true));
+                
                 var _quadratic = format.asQuadratic(quadratic);
                 var [_factor1, _factor2] = [quadratic.answer1 * -1, quadratic.answer2 * -1];
                 var [_answer1, _answer2] = [quadratic.answer1, quadratic.answer2];
+                const X2 = format.wrapLatex("x^2");
 
                 var questionText;
                 var answers;
@@ -153,6 +156,7 @@ var generate = (function() {
                         (7) These are your answers.`;
                     stepsOfWorking = quadratic.a == 1 ? aValueIsOneWorking : aValueIsNotOneWorking;
                 }
+
                 else if(question == "factoriseQuadratic") {
                     let questionType = random.number(0, 3);
                 
@@ -182,6 +186,7 @@ var generate = (function() {
                     (5) Finish factorisation, ${format.wrapLatex("(" + quadratic.a + "x" + format.evaluatePlus(quadratic.workingAnswer2) + ")(x" + format.evaluatePlus(_factor1) + ")")}\n
                     (6) This is your answer.`;            
                 }
+
                 else if(question == "simplifyFraction") {
                     let quadraticFraction = rawQuadraticFraction();
                     let numeratorQuadratic = quadraticFraction[0];
@@ -190,6 +195,7 @@ var generate = (function() {
                     answers = [`(x${format.evaluatePlus(numeratorQuadratic.answer2 * -1)})/(x${format.evaluatePlus(denominatorQuadratic.answer2 * -1)})`];
                     stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}`;
                 }
+
                 else if(question == "solveFraction") {
                     let quadraticFraction = rawQuadraticFraction();
                     let numeratorQuadratic = quadraticFraction[0];
@@ -227,12 +233,14 @@ var generate = (function() {
                     answers = [answer1 + "," + answer2, answer2 + "," + answer1];
                     stepsOfWorking = `This is a prototype version. The answers are ${answer1} and ${answer2}`;
                 }
+
                 else if(question == "expandQuadratic") {
                     var _fQuadratic = format.asfQuadratic(quadratic);
                     questionText = `Expand ${_fQuadratic}`;
                     answers = [format.asQuadratic(quadratic, false)];
                     stepsOfWorking = `This is a prototype version. The answers are ${answers[0]}`;
                 }
+
                 else if(question == "oneValueForX") {
                     quadratic = rawQuadratic(random.number(scalingRange(2, 10), scalingRange(2, 10, false), true, "even"), random.number(scalingRange(2, 10), scalingRange(2, 10, false), true, "even"), 1);
                     if(Math.abs(quadratic.b) == 1) quadratic.b = 2; 
@@ -242,11 +250,37 @@ var generate = (function() {
                     answers = [Math.pow(quadratic.b / 2, 2).toString()];
                     stepsOfWorking = `This is a prototype version. The answer is ${Math.pow(quadratic.b / 2, 2)}`;
                 }
+
                 else if(question == "valueAtPoint") {
                     let point = random.number(0, 4, true);
                     questionText = `A parabola has the equation: ${_quadratic}. What is the value of y when x = ${point}?`;
                     answers = [(quadratic.a * Math.pow(point, 2) + quadratic.b * point + quadratic.c).toString()];
                     stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}`;
+                }
+
+                else if(question == "solveQuadraticWithRHS") {
+                    let rhs = random.number(1, 150);
+                    quadratic.c = quadratic.c + rhs;
+                    let _quadraticNew = format.asQuadratic(quadratic);
+
+                    questionText = `A rectangle has the area of ${_quadraticNew}. If the area of the rectangle is ${rhs}, what is the value(s) of x?`;
+                    answers = [quadratic.answer1 + "," + quadratic.answer2, quadratic.answer2 + "," + quadratic.answer1];
+                    
+                    const AC = quadratic.a * (quadratic.c - rhs);
+                    stepsOfWorking = quadratic.a == 1 ? `${_quadraticNew}${format.wrapLatex("=" + rhs)}\n
+                    (1) Quadratics can only be solved if the right hand side is equal to 0. Therefore, the first step is to rearrange by subtracting ${rhs} from both sides to get ${_quadratic + format.wrapLatex("=0")}\n
+                    (2) Find the two numbers which add to equal the coefficient of x and multiply to equal the constant. These are ${_factor1} and ${_factor2}\n
+                    (3) Multiply these numbers by negative 1 to get ${_answer1} and ${_answer2}\n
+                    (4). These are your answers.` :
+                    `${_quadraticNew + format.wrapLatex("=" + rhs)}\n
+                    (1) Quadratics can only be solved if the right hand side is equal to 0. Therefore, the first step is to rearrange by subtracting ${rhs} from both sides to get ${_quadratic}${format.wrapLatex("=0")}\n
+                    (2) Find the product of the coefficient of ${X2} and the constant, ${AC}\n
+                    (3) Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, ${quadratic.workingAnswer1} and ${quadratic.workingAnswer2}.\n
+                    (4) Split the coefficient of x into these two numbers, ${format.wrapLatex(quadratic.a + "x^2" + format.hideIfOne(quadratic.workingAnswer1, false) + "x" + format.hideIfOne(quadratic.workingAnswer2, false) + "x" + format.evaluatePlus(quadratic.c - rhs))}\n
+                    (5) Factorise the first two terms and the last two terms, ${format.wrapLatex(quadratic.a + "x(x" + format.evaluatePlus(quadratic.workingAnswer1 / quadratic.a) + ")" + format.evaluatePlus(quadratic.workingAnswer2) + "(x" + format.evaluatePlus(((quadratic.c - rhs) / quadratic.workingAnswer2)) + ")")}\n
+                    (6) Finish factorisation ${"(" + format.wrapLatex(quadratic.a + "x" + format.evaluatePlus(quadratic.workingAnswer2) + ")(x" + format.evaluatePlus(_factor1) + ")")}\n
+                    (7) Find the values for x which make a set of brackets equal to 0. These are ${_answer1} and ${_answer2}\n
+                    (8) These are your answers.`;
                 }
 
                 return {
@@ -258,27 +292,6 @@ var generate = (function() {
     }
     };
 })();
-
-function valueAtPoint() {
-    var x = createQuadratic(quadraticRandom(), quadraticRandom());
-    var point = random(0, 4, true);
-    return {
-        questionText: "A parabola has the equation: " + wrapLatex(hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x" + evaluatePlus(x.c)) + ". What is the value of y when x = " + point + "?",
-        answers: [(x.a * Math.pow(point, 2) + x.b * point + x.c).toString()],
-        stepsOfWorking: ["This is a prototype version\n" + (x.a * Math.pow(point, 2) + x.b * point + x.c), 0]
-    };
-}
-
-function solveQuadraticWithRHS() {
-    var x = createQuadratic(random(scalingRange(5, 10), scalingRange(5, 10, false), true, 1), random(scalingRange(5, 10), scalingRange(5, 10, false), true));
-    var rhs = random(1, 150);
-    x.c = x.c + rhs;
-    return {
-        questionText: "A rectangle has an area of " + renderQuadratic(x.a, x.b, x.c) + ". If the area of the rectangle is " + rhs + ", what is the value(s) of x?",
-        answers: [x.answer1 + "," + x.answer2, x.answer2 + "," + x.answer1],
-        stepsOfWorking: [renderQuadratic(x.a, x.b, x.c) + "\\(=" + rhs + "\\) \n1. Quadratics can only be solved if the right hand side is equal to 0. Therefore, the first step is to rearrange by subtracting " + rhs + " from both sides.\n" + renderQuadratic(x.a, x.b, x.c - rhs) + "\\(=0\\)" + "\n2. Find the two numbers which add to equal the coefficient of x and multiply to equal the constant. These are " + x.answer1 * -1 + " and " + x.answer2 * -1 + ".\n3. Multiply these numbers by negative 1 to get " + x.answer1 + " and " + x.answer2 + "\n4. These are your answers.", renderQuadratic(x.a, x.b, x.c) + "\\(=" + rhs + "\\) \n1. Quadratics can only be solved if the right hand side is equal to 0. Therefore, the first step is to rearrange by subtracting " + rhs + " from both sides.\n" + renderQuadratic(x.a, x.b, x.c - rhs) + "\\(=0\\)" + "\n2. Find the product of the coefficient of \\(x^2\\) and the constant, " + x.a * (x.c - rhs) + "\n3. Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, " + x.workingAnswer1 + " and " + x.workingAnswer2 + "\n4. Split the coefficient of x into these two numbers, \\(" + x.a + "x^2" + hideIfOne(x.workingAnswer1, false) + "x" + hideIfOne(x.workingAnswer2, false) + "x" + evaluatePlus(x.c - rhs) + "\\)\n5. Factorise the first two terms and the last two terms," + "\\(" + x.a + "x(x" + evaluatePlus(x.workingAnswer1 / x.a) + ")" + evaluatePlus(x.workingAnswer2) + "(x" + evaluatePlus((x.c - rhs) / x.workingAnswer2) + ")\\)\n6. Finish factorisation, \\((" + x.a + "x" + evaluatePlus(x.workingAnswer2) + ")(x" + evaluatePlus(x.answer1 * -1) + ")\\)\n7. Find the values for x which make a set of brackets equal to 0. These are " + x.answer1 + " and " + x.answer2 + "\n8. These are your answers.", x.workingIndex]
-    };
-}
 
 function howLongPastPoint() {
     var x = createQuadratic(quadraticRandom(), quadraticRandom());
