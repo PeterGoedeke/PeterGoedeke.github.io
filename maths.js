@@ -175,7 +175,7 @@ var generate = (function() {
                 stepsOfWorking: [aValueIsOneWorking, aValueIsNotOneWorking, quadratic.workingIndex]
             };
         },
-        simplifyFraction() {
+        simplifyFraction: function() {
             var quadraticFraction = rawQuadraticFraction();
             var numeratorQuadratic = quadraticFraction[0];
             var denominatorQuadratic = quadraticFraction[1];
@@ -186,6 +186,45 @@ var generate = (function() {
                 answers: [answer],
                 stepsOfWorking: [`This is a prototype version. The answer is ${answer}`, 0]
             }
+        },
+        solveFraction: function() {
+            var quadraticFraction = rawQuadraticFraction();
+            var numeratorQuadratic = quadraticFraction[0];
+            var denominatorQuadratic = quadraticFraction[1];
+            numeratorQuadratic.answer2 = Math.abs(numeratorQuadratic.answer2); denominatorQuadratic.answer2 = Math.abs(denominatorQuadratic.answer2);
+            var lower = (numeratorQuadratic.answer2 - denominatorQuadratic.answer2) > 0 ? (numeratorQuadratic.answer2 + 1) : (denominatorQuadratic.answer2 + 1);
+            var answer1 = random.number(lower, 10, false, "even");
+            var rhsNumerator = answer1 - numeratorQuadratic.answer2;
+            var rhsDenominator = answer1 - denominatorQuadratic.answer2;
+            var rhsNumeratorContainsX = true;
+            for(let i = 1;; i++) {
+                var rhsNewNumerator = rhsNumerator * i;
+                var rhsNewDenominator = rhsDenominator * i;
+                console.log(`${rhsNewNumerator} ${rhsNewDenominator} ${answer1}`)
+                if(Math.abs(rhsNewNumerator % answer1) == 0) {
+                    rhsNumerator = rhsNewNumerator / answer1;
+                    rhsNumeratorContainsX = true;
+                    rhsDenominator = rhsNewDenominator;
+                    break;
+                }
+                if(Math.abs(rhsNewDenominator % answer1) == 0) {
+                    rhsDenominator = rhsNewDenominator / answer1;
+                    rhsNumeratorContainsX = false;
+                    rhsNumerator = rhsNewNumerator;
+                    break;
+                }
+            }
+
+            var answer2 = rhsNumeratorContainsX ? quadraticFormula(rhsNumerator, denominatorQuadratic.answer2 * rhsNumerator * -1 - rhsDenominator, rhsDenominator * numeratorQuadratic.answer2) : quadraticFormula(rhsDenominator, numeratorQuadratic.answer2 * rhsDenominator * -1 - rhsNumerator, rhsNumerator * denominatorQuadratic.answer2);
+            answer2 = answer1 == answer2[0] ? answer2[1] : answer2[0];
+            
+            rhsNumeratorContainsX ? rhsNumerator = format.hideIfOne(rhsNumerator, false) + "x" : rhsDenominator = format.hideIfOne(rhsDenominator, false) + "x";
+            var questionText = `Solve \\(\\frac\{${format.quadratic(numeratorQuadratic.a, numeratorQuadratic.b, numeratorQuadratic.c, false)}\}\{${format.quadratic(denominatorQuadratic.a, denominatorQuadratic.b, denominatorQuadratic.c, false)}\}=\\frac\{${rhsNumerator}\}\{${rhsDenominator}\}\\)`;
+            return {
+                questionText: questionText,
+                answers: [answer1 + "," + answer2, answer2 + "," + answer1],
+                stepsOfWorking: [`This is a prototype version. The answers are ${answer1} and ${answer2}`, 0]
+            };
         }
     };
 })();
