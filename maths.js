@@ -125,6 +125,7 @@ var generate = (function() {
                 if(question == "solveQuadraticWithRHS") quadratic = rawQuadratic(random.number(scalingRange(5, 10), scalingRange(5, 10, false), true), random.number(scalingRange(5, 10), scalingRange(5, 10, false), true));
                 
                 var _quadratic = format.asQuadratic(quadratic);
+                var _fQuadratic = format.asfQuadratic(quadratic);
                 var [_factor1, _factor2] = [quadratic.answer1 * -1, quadratic.answer2 * -1];
                 var [_answer1, _answer2] = [quadratic.answer1, quadratic.answer2];
                 const X2 = format.wrapLatex("x^2");
@@ -235,7 +236,6 @@ var generate = (function() {
                 }
 
                 else if(question == "expandQuadratic") {
-                    var _fQuadratic = format.asfQuadratic(quadratic);
                     questionText = `Expand ${_fQuadratic}`;
                     answers = [format.asQuadratic(quadratic, false)];
                     stepsOfWorking = `This is a prototype version. The answers are ${answers[0]}`;
@@ -322,7 +322,24 @@ var generate = (function() {
                     stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
                 }
 
+                else if(question == "rearrangeEquations") {
+                    let [aLetter, bLetter] = [random.letter(), random.letter()];
+                    let [aIsFactorised, bIsFactorised] = [random.coinflip(), random.coinflip()];
+                    let [aQuadratic, bQuadratic] = [stockQuadratic(), stockQuadratic()];
+                    let addToA = random.number(2, 10);
+                    let addToB = [NaN, NaN];
+                    if (aQuadratic.a != bQuadratic.a) addToB[0] = aQuadratic.a - bQuadratic.a;
+                    if (aQuadratic.b != bQuadratic.b) addToB[1] = aQuadratic.b - bQuadratic.b;
 
+                    const _aQuadratic = aIsFactorised ? format.asfQuadratic(aQuadratic) : format.asQuadratic(aQuadratic);
+                    const _bQuadratic = bIsFactorised ? format.asfQuadratic(bQuadratic) : format.asQuadratic(bQuadratic);
+                    const _addToB1 = isNaN(addToB[0]) ? "" : format.hideIfOne(addToB[0], false) + "x^2";
+                    const _addToB2 = isNaN(addToB[1]) ? "" : format.hideIfOne(addToB[1], false) + "x";
+                    questionText = `${format.wrapLatex(`${aLetter}=`)}${_aQuadratic}${format.wrapLatex(format.evaluatePlus(addToA))} and ${format.wrapLatex(`${bLetter}=`)}${_bQuadratic}${format.wrapLatex(_addToB1 + _addToB2)}. Give an expression for ${aLetter} in terms of ${bLetter}.`;
+
+                    answers = [aLetter + "=" + bLetter + format.evaluatePlus(aQuadratic.c + addToA - bQuadratic.c), bLetter + format.evaluatePlus(aQuadratic.c + addToA - bQuadratic.c) + "=" + aLetter];
+                    stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
+                }
 
                 return {
                     questionText: questionText,
@@ -334,23 +351,6 @@ var generate = (function() {
     };
 })();
 
-function solveGivenVariable() {
-    var a = randomLetter(); var b = randomLetter(); var c = randomLetter(); var x = randomLetter();
-    var aValue = random(scalingRange(1, 12), scalingRange(1, 12, false)); var bValue = random(scalingRange(1, 12), scalingRange(1, 12, false)); var xValue = random(scalingRange(1, 12), scalingRange(1, 12, false));
-    var aShown = true;
-    if (coinflip) {
-        a = aValue;
-    } else {
-        b = bValue;
-        aShown = false;
-    }
-    return {
-        questionText: "The distance, " + c + " cm, travelled by an object is given by " + wrapLatex(c + "=" + (coinflip ? b + x + "+" + a + x + "^2" : a + x + "^2+" + b + x)) + ". If " + x + " = " + xValue + " and " + (aShown ? b : a) + " = " + (aShown ? bValue : aValue) + ", calculate the distance the object has travelled.",
-        answers: [(aValue * Math.pow(xValue, 2) + bValue * xValue).toString(), aValue * Math.pow(xValue, 2) + bValue * xValue + "cm"],
-        stepsOfWorking: ["This is a prototype version\n" + (aValue * Math.pow(xValue, 2) + bValue * xValue), 0]
-    };
-}
-
 function rearrangeEquations() {
     var aLetter = randomLetter(); var bLetter = randomLetter();
     var aIsF = coinflip ? true : false; var bIsF = coinflip ? true : false;
@@ -360,7 +360,7 @@ function rearrangeEquations() {
     if (aQuadratic.a != bQuadratic.a) addToB[0] = aQuadratic.a - bQuadratic.a;
     if (aQuadratic.b != bQuadratic.b) addToB[1] = aQuadratic.b - bQuadratic.b;
     return {
-        questionText: wrapLatex(aLetter + "=") + (aIsF ? renderFQuadratic(aQuadratic.a, aQuadratic.step, aQuadratic.answer2) : renderQuadratic(aQuadratic.a, aQuadratic.b, aQuadratic.c)) + wrapLatex(evaluatePlus(addToA)) + " and " + wrapLatex(bLetter + "=") + (bIsF ? renderFQuadratic(bQuadratic.a, bQuadratic.step, bQuadratic.answer2) : renderQuadratic(bQuadratic.a, bQuadratic.b, bQuadratic.c)) + wrapLatex((isNaN(addToB[0]) ? "" : hideIfOne(addToB[0], false) + "x^2") + (isNaN(addToB[1]) ? "" : hideIfOne(addToB[1], false) + "x")) + ". Give an expression for " + aLetter + " in terms of " + bLetter + ".",
+
         answers: [aLetter + "=" + bLetter + evaluatePlus(aQuadratic.c + addToA - bQuadratic.c), bLetter + evaluatePlus(aQuadratic.c + addToA - bQuadratic.c) + "=" + aLetter],
         stepsOfWorking: ["This is a prototype version\n" + (aLetter + "=" + bLetter + evaluatePlus(aQuadratic.c + addToA - bQuadratic.c)), 0]
     };
@@ -509,7 +509,7 @@ function powerInequalities() {
     };
 }
 
-var questions = [generate.question("solveQuadratic"), generate.question("solveQuadraticWithRHS"), generate.question("factoriseQuadratic"), generate.question("expandQuadratic"), generate.question("simplifyFraction"), generate.question("solveFraction"), generate.question("oneValueForX"), generate.question("valueAtPoint"), generate.question("howLongPastPoint"), generate.question("whenNegative"), generate.question("solveGivenVariable"), rearrangeEquations, generate.question("rearrangeWithRoot"), generate.question("algebraicWordQuestions"), generate.question("simplify"), generate.question("rawNumeric"), generate.question("exchange"), generate.question("ratios"), generate.question("solveConversionsToPowers"), generate.question("solveRemovingBases"), generate.question("powerInequalities")];
+var questions = [generate.question("solveQuadratic"), generate.question("solveQuadraticWithRHS"), generate.question("factoriseQuadratic"), generate.question("expandQuadratic"), generate.question("simplifyFraction"), generate.question("solveFraction"), generate.question("oneValueForX"), generate.question("valueAtPoint"), generate.question("howLongPastPoint"), generate.question("whenNegative"), generate.question("solveGivenVariable"), generate.question("rearrangeEquations"), generate.question("rearrangeWithRoot"), generate.question("algebraicWordQuestions"), generate.question("simplify"), generate.question("rawNumeric"), generate.question("exchange"), generate.question("ratios"), generate.question("solveConversionsToPowers"), generate.question("solveRemovingBases"), generate.question("powerInequalities")];
 questions.push(questions[0]);
 
 var questionNames = ["Solve Quadratics", "Solve Quadratics With RHS", "Factorise Quadratics", "Expand Quadratics", "Simplify Fractions", "Solve Fractions", "Find One Value For x", "Find Value At Point", "Find Time Past Point", "Find When Quadratic Is Negative", "Solve Given Variable", "Rearrange Equations", "Rearrange Equations With Root", "Algebraic Word Questions", "Remove Common Factors", "Simple Simultaneous Equations", "Simultaneous Equations 1", "Simultaneous Equations 2", "Solve Powers", "Solve Removing Bases", "Power Inequalities", "Wildcard Questions"];
