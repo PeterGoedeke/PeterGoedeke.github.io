@@ -295,6 +295,14 @@ var generate = (function() {
                     stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}`;
                 }
 
+                else if(question == "whenNegative") {
+                    let answer1Greater = false;
+                    if (_answer2 - _answer1 < 0) answer1Greater = true;
+                    questionText = `If ${format.wrapLatex("y=")}${_quadratic}, for what values of x will y be negative?`;
+                    answers = [answer1Greater ? _answer2 + ">x>" + _answer1 : _answer2 + ">x>" + _answer1, answer1Greater ? _answer1 + "<x<" + _answer2 : _answer1 + "<x<" + _answer2];
+                    stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}`;
+                }
+
                 return {
                     questionText: questionText,
                     answers: answers,
