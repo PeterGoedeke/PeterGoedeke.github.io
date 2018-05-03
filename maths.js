@@ -283,6 +283,18 @@ var generate = (function() {
                     (8) These are your answers.`;
                 }
 
+                else if(question == "howLongPastPoint") {
+                    let yValue = random.number(1, 10);
+
+                    questionText = `${random.name()} kicks a ball. The flight path of the ball can be modelled by ${format.wrapLatex("y=")}${_quadratic}, where x and y are measured in metres. For how many metres of the horizontal distance that the ball travels will it be ${yValue} metres or more above the ground?`;
+
+                    let answer = quadraticFormula(quadratic.a, quadratic.b, quadratic.c);
+                    answers = [(answer[0] - answer[1]).toString(), (answer[0] - answer[1]) + "m"];
+                    quadratic.c += yValue;
+
+                    stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}`;
+                }
+
                 return {
                     questionText: questionText,
                     answers: answers,
@@ -292,19 +304,6 @@ var generate = (function() {
     }
     };
 })();
-
-function howLongPastPoint() {
-    var x = createQuadratic(quadraticRandom(), quadraticRandom());
-    var yValue = random(1, 10);
-    var answer = quadraticFormula(x.a, x.b, x.c);
-    var answer = answer[0] - answer[1];
-    x.c = x.c + yValue;
-    return {
-        questionText: randomName() + " kicks a ball. The flight path of the ball can be modelled by y = " + renderQuadratic(x.a, x.b, x.c) + ", where x and y are measured in metres. For how many metres of the horizontal distance that the ball travels will it be " + yValue + " metres or more above the ground?",
-        answers: [answer.toString(), answer + "m"],
-        stepsOfWorking: ["This is a prototype version\n" + answer, 0]
-    };
-}
 
 function whenNegative() {
     var x = createQuadratic(quadraticRandom(), quadraticRandom());
