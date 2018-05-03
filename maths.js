@@ -53,7 +53,7 @@ var random = (function() {
                     number = Math.floor(Math.random() * (upper - lower + 1) + lower);
                 }
                 if(negativesEnabled && coinflip()) number *= -1;
-                if(selectedType == "even" || selectedType == "scalingEven") number ++;
+                if(number % 2 != 0 && (selectedType == "even" || selectedType == "scalingEven")) number ++;
             } while(Math.abs(number) == Math.abs(lastGeneratedNumber));
             lastGeneratedNumber = number;
             return number;
@@ -250,12 +250,22 @@ var generate = (function() {
                 answers: answers,
                 stepsOfWorking: `This is a prototype version. The answers are ${answers[0]}`
             }
+        },
+        oneValueForX: function() {
+            quadratic = rawQuadratic(random.number(scalingRange(2, 10), scalingRange(2, 10, false), true, "even"), random.number(scalingRange(2, 10), scalingRange(2, 10, false), true, "even"), 1);
+            if(Math.abs(quadratic.b) == 1) quadratic.b = 2; 
+            _quadratic = format.asQuadratic({a: quadratic.a, b: quadratic.b, c: "+c"});
+            return {
+                questionText: `${random.name()} is trying to find a value for c so that ${_quadratic} has only one solution for x. Give the value of c.`,
+                answers: [Math.pow(quadratic.b / 2, 2).toString()],
+                stepsOfWorking: `This is a prototype version. The answer is ${Math.pow(quadratic.b / 2, 2)}`
+            }
         }
     };
 })();
 
 function oneValueForX() {
-    var x = createQuadratic(random(scalingRange(2, 10), scalingRange(2, 10, false), true, 2), random(scalingRange(2, 10), scalingRange(2, 10, false), true, 2));
+   
     return {
         questionText: randomName() + " is trying to find a value for c so that " + wrapLatex(hideIfOne(x.a) + "x^2" + hideIfOne(x.b, false) + "x + c") + " has only one solution for x. Give the value of c.",
         answers: [Math.pow(x.b / 2, 2).toString()],
