@@ -26,7 +26,7 @@ var format = (function() {
         evaluatePlus: evaluatePlus,
         wrapLatex: wrapLatex,
         hideIfOne: hideIfOne,
-        quadratic: (a, b, c) => `\\(${hideIfOne(a, false)}x^2${hideIfOne(b)}x${evaluatePlus(c)}\\)`,
+        quadratic: (a, b, c, wrap = true) => wrap ? `\\(${hideIfOne(a, false)}x^2${hideIfOne(b)}x${evaluatePlus(c)}\\)` : `${hideIfOne(a, false)}x^2${hideIfOne(b)}x${evaluatePlus(c)}`,
         fQuadratic: (a, step, answer2) => `\\((${hideIfOne(a, false)}x${evaluatePlus(step)})(x${evaluatePlus(answer2)})\\)`
     }
 })();
@@ -66,7 +66,6 @@ var random = (function() {
                 if(selectedType == "even" || selectedType == "scalingEven") number ++;
             } while(Math.abs(number) == Math.abs(lastGeneratedNumber));
             lastGeneratedNumber = number
-            console.log(number);
             return number;
         },
         coinflip: coinflip
@@ -90,6 +89,8 @@ function scalingRange(trueLower, trueUpper, isLower) {
 //---------------------------
 //Primary algorithms---------
 //---------------------------
+
+var globalTest = 0;
 
 var generate = (function() {
     var quadraticFormula = (a, b, c) => [(-1 * b + Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a), (-1 * b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a)];
@@ -120,14 +121,13 @@ var generate = (function() {
     }
     function rawQuadraticFraction() {
         var commonAnswer = stockRandom(); var answerNumerator = stockRandom();
-        var answerDenominator;
-        while(Math.abs(answerDenominator) == Math.abs(commonAnswer) || Math.abs(answerDenominator) == Math.abs(answerNumerator))
+        var answerDenominator = stockRandom();
+        while(Math.abs(answerDenominator) == Math.abs(commonAnswer) || Math.abs(answerDenominator) == Math.abs(answerNumerator)) {
             answerDenominator = stockRandom();
-        var numeratorQuadratic = rawQuadratic(commonAnswer, answerNumerator);
-        var denominatorQuadratic = rawQuadratic(commonAnswer, answerDenominator);
-        return {
-            fraction: [numeratorQuadratic, denominatorQuadratic]
         }
+        var numeratorQuadratic = rawQuadratic(commonAnswer, answerNumerator, 1);
+        var denominatorQuadratic = rawQuadratic(commonAnswer, answerDenominator, 1);
+        return [numeratorQuadratic, denominatorQuadratic]
     }
     return {
         solveQuadratic: function() {
@@ -149,6 +149,7 @@ var generate = (function() {
         },
         factoriseQuadratic: function() {
             var quadratic = stockQuadratic();
+            
             var questionType = random.number(0, 3);
             
             var questionText = "";
@@ -175,21 +176,19 @@ var generate = (function() {
             };
         },
         simplifyFraction() {
-            var quadratic = stockQuadratic();
+            var quadraticFraction = rawQuadraticFraction();
+            var numeratorQuadratic = quadraticFraction[0];
+            var denominatorQuadratic = quadraticFraction[1];
+            var questionText = `Simplify \\(\\frac\{${format.quadratic(numeratorQuadratic.a, numeratorQuadratic.b, numeratorQuadratic.c, false)}\}\{${format.quadratic(denominatorQuadratic.a, denominatorQuadratic.b, denominatorQuadratic.c, false)}\}\\)`;
+            var answer = `(x${format.evaluatePlus(numeratorQuadratic.answer2 * -1)})/(x${format.evaluatePlus(denominatorQuadratic.answer2 * -1)})`;
+            return {
+                questionText: questionText,
+                answers: [answer],
+                stepsOfWorking: [`This is a prototype version. The answer is ${answer}`, 0]
+            }
         }
     };
 })();
-
-function simplifyFraction() {
-    var x = createQuadraticFraction();
-    var top = createQuadratic(x.answerTop, x.commonAnswer);
-    var bottom = createQuadratic(x.answerBottom, x.commonAnswer);
-    return {
-        questionText: "Simplify " + wrapLatex("\\frac{" + hideIfOne(top.a) + "x^2" + hideIfOne(top.b, false) + "x" + evaluatePlus(top.c) + "}{" + hideIfOne(bottom.a) + "x^2" + hideIfOne(bottom.b, false) + "x" + evaluatePlus(bottom.c) + "}", true),
-        answers: ["(x" + evaluatePlus(x.answerTop * -1) + ")/(x" + evaluatePlus(x.answerBottom * -1) + ")"],
-        stepsOfWorking: ["This is a prototype version\n" + "(x" + evaluatePlus(x.answerTop * -1) + ")/(x" + evaluatePlus(x.answerBottom * -1) + ")", 0]
-    };
-}
 
 function solveFraction() {
     var x = createQuadraticFraction();
@@ -470,7 +469,7 @@ function powerInequalities() {
     };
 }
 
-var questions = [generate.solveQuadratic, solveQuadraticWithRHS, generate.factoriseQuadratic, expandQuadratic, simplifyFraction, solveFraction, oneValueForX, valueAtPoint, howLongPastPoint, whenNegative, solveGivenVariable, rearrangeEquations, rearrangeWithRoot, algebraicWordQuestions, simplify, rawNumeric, exchange, ratios, solveConversionsToPowers, solveRemovingBases, powerInequalities];
+var questions = [generate.solveQuadratic, generate.solveQuadraticWithRHS, generate.factoriseQuadratic, generate.expandQuadratic, generate.simplifyFraction, generate.solveFraction, generate.oneValueForX, generate.valueAtPoint, generate.howLongPastPoint, generate.whenNegative, generate.solveGivenVariable, rearrangeEquations, generate.rearrangeWithRoot, generate.algebraicWordQuestions, generate.simplify, generate.rawNumeric, generate.exchange, generate.ratios, generate.solveConversionsToPowers, generate.solveRemovingBases, generate.powerInequalities];
 questions.push(questions[0]);
 
 var questionNames = ["Solve Quadratics", "Solve Quadratics With RHS", "Factorise Quadratics", "Expand Quadratics", "Simplify Fractions", "Solve Fractions", "Find One Value For x", "Find Value At Point", "Find Time Past Point", "Find When Quadratic Is Negative", "Solve Given Variable", "Rearrange Equations", "Rearrange Equations With Root", "Algebraic Word Questions", "Remove Common Factors", "Simple Simultaneous Equations", "Simultaneous Equations 1", "Simultaneous Equations 2", "Solve Powers", "Solve Removing Bases", "Power Inequalities", "Wildcard Questions"];
