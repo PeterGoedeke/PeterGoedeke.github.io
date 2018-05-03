@@ -112,7 +112,7 @@ $(".inputBox").submit(function(event) {
 
 function refreshQuestion() {
     selectedQuestion = wildcard ? Math.floor(Math.random() * questions.length) : selectedQuestion;
-    currentQuestion = questions[selectedQuestion];
+    currentQuestion = questions[selectedQuestion]();
     $(".displayArea").html("<div>" + currentQuestion.questionText + "</div>");
     $(".displayArea").css('color', 'white'); MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$(".displayArea").css('color', 'black');});
     $(".inputBox input").attr("placeholder", exampleFormats[selectedQuestion]);
