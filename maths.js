@@ -353,6 +353,17 @@ var generate = (function() {
                     stepsOfWorking = `This is a prototype version. The answer is ${answers[3]}.`;
                 }
 
+                else if(question == "algebraicWordQuestions") {
+                    let [firstTime, firstCharge, additionalHours, additionalCost] = [random.number(2, 5), random.number(5, 15), random.number(3, 10), random.number(1, 5)];
+                    let name = random.name();
+
+                    const totalCost = firstCharge + additionalHours * additionalCost;
+                    questionText = `${name} hired a bike for a ride. It cost $${firstCharge} for ${firstTime} hours, and then $${additionalCost} for every additional hour. The ride cost $${totalCost}. How long did ${name} hire the bike for?`;
+
+                    answers = [(additionalHours + firstTime).toString(), additionalHours + firstTime + "h", additionalHours + firstTime + "hours"];
+                    stepsOfWorking = `This is in a protype version. ${answers[0]}.`;
+                }
+
                 return {
                     questionText: questionText,
                     answers: answers,
@@ -362,15 +373,6 @@ var generate = (function() {
     }
     };
 })();
-
-function rearrangeWithRoot() {
-    var rhs = randomLetter(); var coefficient = random(2, 4); var solveFor = randomLetter(); var denominator = random(2, 15);
-    return {
-        questionText: "The formula " + wrapLatex(rhs + "=" + coefficient + "\\sqrt{\\frac{" + solveFor + "}{" + denominator + "}}") + " solves for " + rhs + ". Rearrange the formula to solve for " + solveFor + ".",
-        answers: ["(" + denominator + rhs + "^2)/" + coefficient + "^2=" + solveFor, solveFor + "=(" + denominator + rhs + "^2)/" + coefficient + "^2", "(" + denominator + rhs + "^2)/" + Math.pow(coefficient, 2) + "=" + solveFor, solveFor + "=(" + denominator + rhs + "^2)/" + Math.pow(coefficient, 2)],
-        stepsOfWorking: ["This is a prototype version\n" + ("(" + denominator + rhs + "^2)/" + coefficient + "^2=" + solveFor), 0]
-    };
-}
 
 function algebraicWordQuestions() {
     var firstTime = random(2, 5); var firstCharge = random(5, 15); var additionalHours = random(3, 10); var additionalCost = random(1, 5);
