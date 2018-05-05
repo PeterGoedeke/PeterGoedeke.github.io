@@ -361,9 +361,72 @@ var generate = (function() {
                     questionText = `${name} hired a bike for a ride. It cost $${firstCharge} for ${firstTime} hours, and then $${additionalCost} for every additional hour. The ride cost $${totalCost}. How long did ${name} hire the bike for?`;
 
                     answers = [(additionalHours + firstTime).toString(), additionalHours + firstTime + "h", additionalHours + firstTime + "hours"];
-                    stepsOfWorking = `This is in a protype version. ${answers[0]}.`;
+                    stepsOfWorking = `This is in a protype version. The answer is ${answers[0]}.`;
                 }
 
+                else if(question == "simplify") {
+                    let [letter1, letter2] = [random.letter(), random.letter()];
+                    
+                    let termsInNumerator = random.number(scalingRange(2, 5), scalingRange(2, 5, false));
+                    let numeratorTerms = [];
+                    for(let i = 0; i < termsInNumerator; i++) {
+                        let [coefficientInTerm, letter1sInTerm, letter2sInTerm] = [random.number(1, 5), random.number(1, 4), random.number(1, 4)];
+                        numeratorTerms.push({coefficientInTerm: coefficientInTerm, letter1sInTerm: letter1sInTerm, letter2sInTerm: letter2sInTerm});
+                    }
+                    let coefficientInDenominator = random.number(1, 5);
+                    let [letter1sInDenominator, letter2sInDenominator] = [random.number(1, 4), random.number(1, 4)];
+                    let denominatorTerm = {coefficientInTerm: coefficientInDenominator, letter1sInTerm: letter1sInDenominator, letter2sInTerm: letter2sInDenominator};
+
+                    let numeratorText = "";
+                    for(let i = 0; i < termsInNumerator; i++) {
+                        let coefficientInTerm = numeratorTerms[i].coefficientInTerm;
+                        let letter1sInTerm = numeratorTerms[i].letter1sInTerm;
+                        let letter2sInTerm = numeratorTerms[i].letter2sInTerm;
+
+                        let _coefficientInTerm = i == 0 ? format.hideIfOne(coefficientInTerm, false) : format.hideIfOne(coefficientInTerm);
+                        let _letter1sInTerm = letter1sInTerm == 1 ? letter1 : `${letter1}^${letter1sInTerm}`;
+                        let _letter2sInTerm = letter2sInTerm == 1 ? letter2 : `${letter2}^${letter2sInTerm}`;
+                        numeratorText += (_coefficientInTerm + _letter1sInTerm + _letter2sInTerm);
+                    }
+                    let _coefficientInDenominator = format.hideIfOne(coefficientInDenominator, false);
+                    let _letter1sInDenominator = letter1sInDenominator == 1 ? letter1 : `${letter1}^${letter1sInDenominator}`;
+                    let _letter2sInDenominator = letter2sInDenominator == 1 ? letter2 : `${letter2}^${letter2sInDenominator}`;
+                    let denominatorText = (_coefficientInDenominator + _letter1sInDenominator + _letter2sInDenominator);
+                    questionText = `Simplify${format.wrapLatex(`\\frac{${numeratorText}}{${denominatorText}}`, true)}`;
+
+                    let coefficientsForEachTerm = [];
+                    let letter1sForEachTerm = [];
+                    let letter2sForEachTerm = [];
+                    for(let i = 0; i < numeratorTerms.length; i++) {
+                        coefficientsForEachTerm.push(i == 0 ? format.hideIfOne(numeratorTerms[i].coefficientInTerm, false) : format.hideIfOne(numeratorTerms[i].coefficientInTerm));
+                        letter1sForEachTerm.push(numeratorTerms[i].letter1sInTerm);
+                        letter2sForEachTerm.push(numeratorTerms[i].letter2sInTerm);
+                    }
+                    letter1sForEachTerm.push(letter1sInDenominator);
+                    letter2sForEachTerm.push(letter2sInDenominator);
+                    let commonLetter1s = Math.min(...letter1sForEachTerm);
+                    let commonLetter2s = Math.min(...letter2sForEachTerm);
+
+                    let _numeratorText = "";
+                    for(let i = 0; i < numeratorTerms.length; i++) {
+                        numeratorTerms[i].letter1sInTerm -= commonLetter1s;
+                        numeratorTerms[i].letter2sInTerm -= commonLetter2s;
+                        let _letter1InTerm = numeratorTerms[i].letter1sInTerm == 0 ? "" : numeratorTerms[i].letter1sInTerm == 1 ? letter1 : `${letter1}^${numeratorTerms[i].letter1sInTerm}`;
+                        let _letter2InTerm = numeratorTerms[i].letter2sInTerm == 0 ? "" : numeratorTerms[i].letter2sInTerm == 1 ? letter2 : `${letter2}^${numeratorTerms[i].letter2sInTerm}`;
+                        _numeratorText += `${coefficientsForEachTerm[i]}${_letter1InTerm}${_letter2InTerm}`;
+                        console.log(_numeratorText);
+                    }
+
+
+                    letter1sInDenominator -= commonLetter1s;
+                    letter2sInDenominator -= commonLetter2s;
+                    _letter1sInDenominator = letter1sInDenominator == 1 ? letter1 : `${letter1}^${letter1sInDenominator}`;
+                    _letter2sInDenominator = letter2sInDenominator == 1 ? letter2 : `${letter2}^${letter2sInDenominator}`;
+
+                    answers = [`(${_numeratorText})/${_coefficientInDenominator}${_letter1sInDenominator}${_letter2sInDenominator}`];
+                    stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
+                }
+            
                 return {
                     questionText: questionText,
                     answers: answers,
@@ -373,16 +436,6 @@ var generate = (function() {
     }
     };
 })();
-
-function algebraicWordQuestions() {
-    var firstTime = random(2, 5); var firstCharge = random(5, 15); var additionalHours = random(3, 10); var additionalCost = random(1, 5);
-    var name1 = randomName();
-    return {
-        questionText: name1 + " hired a bike for a ride. It cost $" + firstCharge + " for " + firstTime + " hours, and then $" + additionalCost + " for every additional hour. The ride cost $" + (firstCharge + additionalHours * additionalCost) + ". How long did " + name1 + " hire the bike?",
-        answers: [(additionalHours + firstTime).toString(), additionalHours + firstTime + "h", additionalHours + firstTime + "hours"],
-        stepsOfWorking: ["This is a prototype version\n" + (additionalHours + firstTime), 0]
-    };
-}
 
 function simplify() {
     var letter1 = randomLetter(); var letter2 = randomLetter();
