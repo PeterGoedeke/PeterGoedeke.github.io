@@ -483,7 +483,10 @@ var generate = (function() {
                 }
 
                 else if(question == "solveRemovingBases") {
-
+                    let base = random.number(scalingRange(2, 7), scalingRange(2, 7, false));
+                    questionText = `${format.wrapLatex(`${base}^{${quadratic.b * -1}x${format.evaluatePlus(quadratic.c * -1)}}=${base}^{${format.hideIfOne(quadratic.a, false)}x^{2}}`)}. Find the value(s) of x.`;
+                    answers = [_answer1 + "," + _answer2, _answer2 + "," + _answer1];
+                    stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
                 }
 
                 else if(question == "powerInequalities") {
@@ -500,23 +503,8 @@ var generate = (function() {
     };
 })();
 
-function solveConversionsToPowers() {
-    var termWithX = random(1, 4);
-    var base = random(2, 5);
-    var firstTermPower = random(2, 3);
-    var firstTerm = Math.pow(base, firstTermPower);
-    var rhsPower = random(2, 4);
-    var rhs = Math.pow(base, rhsPower);
-    return {
-        questionText: wrapLatex(firstTerm + "*" + base + "^" + "{x" + evaluatePlus(termWithX) + "}=" + rhs),
-        answers: [(rhsPower - termWithX - firstTermPower).toString()],
-        stepsOfWorking: ["This is a prototype version\n" + (rhsPower - termWithX - firstTermPower), 0]
-    };
-}
-
 function solveRemovingBases() {
-    var x = createQuadratic(quadraticRandom(), quadraticRandom());
-    var base = random(scalingRange(2, 7), scalingRange(2, 7, false));
+    
     return {
         questionText: wrapLatex(base + "^{" + x.b * -1 + "x" + evaluatePlus(x.c * -1) + "}=" + base + "^{x^{2}}") + ". Find the value(s) of x.",
         answers: [x.answer1 + "," + x.answer2, x.answer2 + "," + x.answer1],
