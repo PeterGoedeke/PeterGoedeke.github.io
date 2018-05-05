@@ -364,6 +364,7 @@ var generate = (function() {
                     stepsOfWorking = `This is in a protype version. The answer is ${answers[0]}.`;
                 }
 
+                //This function could be refactored to be far more readable, but it's given me enough of a headache as it is.
                 else if(question == "simplify") {
                     let [letter1, letter2] = [random.letter(), random.letter()];
                     
@@ -394,9 +395,7 @@ var generate = (function() {
                     let denominatorText = (_coefficientInDenominator + _letter1sInDenominator + _letter2sInDenominator);
                     questionText = `Simplify${format.wrapLatex(`\\frac{${numeratorText}}{${denominatorText}}`, true)}`;
 
-                    let coefficientsForEachTerm = [];
-                    let letter1sForEachTerm = [];
-                    let letter2sForEachTerm = [];
+                    let [coefficientsForEachTerm, letter1sForEachTerm, letter2sForEachTerm] = [[], [], []];
                     for(let i = 0; i < numeratorTerms.length; i++) {
                         coefficientsForEachTerm.push(i == 0 ? format.hideIfOne(numeratorTerms[i].coefficientInTerm, false) : format.hideIfOne(numeratorTerms[i].coefficientInTerm));
                         letter1sForEachTerm.push(numeratorTerms[i].letter1sInTerm);
@@ -417,7 +416,6 @@ var generate = (function() {
                         console.log(_numeratorText);
                     }
 
-
                     letter1sInDenominator -= commonLetter1s;
                     letter2sInDenominator -= commonLetter2s;
                     _letter1sInDenominator = letter1sInDenominator == 1 ? letter1 : `${letter1}^${letter1sInDenominator}`;
@@ -425,6 +423,24 @@ var generate = (function() {
 
                     answers = [`(${_numeratorText})/${_coefficientInDenominator}${_letter1sInDenominator}${_letter2sInDenominator}`];
                     stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
+                }
+
+                else if(question == "rawNumeric") {
+                    let [x, y] = [random.letter(), random.letter()];
+                    let [xValue, yValue] = [random.number(scalingRange(1, 12), scalingRange(1, 12, false)), random.number(scalingRange(1, 12), scalingRange(1, 12, false))];
+                    let a = random.number(scalingRange(1, 8), scalingRange(1, 8, false));
+                    let b = random.number(scalingRange(1, 8), scalingRange(1, 8, false));
+                    let d = random.number(scalingRange(1, 8), scalingRange(1, 8, false));
+                    let e = random.number(scalingRange(1, 8), scalingRange(1, 8, false));
+                    let c = a * xValue + b * yValue;
+                    let f = d * xValue + e * yValue;
+                    
+                    let _equationOne = format.wrapLatex(`${format.hideIfOne(a)}${x}${format.hideIfOne(b, false)}${y}=${c}`);
+                    let _equationTwo = format.wrapLatex(`${format.hideIfOne(d)}${x}${format.hideIfOne(e, false)}${y}=${f}`);
+                    questionText = `If ${_equationOne} and ${_equationTwo}, what is the value of ${x}?`;
+                    answers = [xValue.toString()];
+                    stepsOfWorking = `This is a prototype version. The answer is ${xValue}`;
+
                 }
             
                 return {
@@ -437,58 +453,11 @@ var generate = (function() {
     };
 })();
 
-function simplify() {
-    var letter1 = randomLetter(); var letter2 = randomLetter();
-    var termsOnTop = random(scalingRange(2, 4), scalingRange(2, 4, false));
-    var coefficients = []; var letter1s = []; var letter2s = []; var terms = [];
-    for (var _i2 = 0; _i2 < termsOnTop + 1; _i2++) {
-        coefficients.push(random(2, 4));
-        if (_i2 == termsOnTop - 2) coefficients[coefficients.length - 1] = 1;
-        letter1s.push(random(1, 3));letter2s.push(random(1, 3));
-        terms.push(hideIfOne(coefficients[_i2], _i2 == 0 ? true : false) + (letter1s[_i2] > 1 ? letter1 + "^" + letter1s[_i2] : letter1) + (letter2s[_i2] > 1 ? letter2 + "^" + letter2s[_i2] : letter2));
-    }
-    if (!!letter1s.reduce(function (a, b) {
-        return a === b ? a : NaN;
-    })) letter1s[0] += 1;
-    var letter1sToSubtract = Math.min.apply(Math, _toConsumableArray(letter1s));
-    var letter2sToSubtract = Math.min.apply(Math, _toConsumableArray(letter2s));
-    var topText = "";
-    for (var _i3 in terms) {
-        if (_i3 < termsOnTop) topText += terms[_i3];
-    } var answerTerms = [];
-    for (var _i4 = 0; _i4 < coefficients.length; _i4++) {
-        answerTerms[_i4] = hideIfOne(coefficients[_i4]);
-        answerTerms[_i4] += letter1s[_i4] - letter1sToSubtract > 0 ? letter1s[_i4] - letter1sToSubtract > 1 ? letter1 + "^" + (letter1s[_i4] - letter1sToSubtract) : letter1 : "";
-        answerTerms[_i4] += letter2s[_i4] - letter2sToSubtract > 0 ? letter2s[_i4] - letter2sToSubtract > 1 ? letter2 + "^" + (letter2s[_i4] - letter2sToSubtract) : letter2 : "";
-    }
-    var answerText = "";
-    for (var _i5 = 0; _i5 < answerTerms.length - 1; _i5++) {
-        answerText += (_i5 != 0 ? "+" : "") + answerTerms[_i5];
-    }
-    return {
-        questionText: "Simplify" + wrapLatex("\\frac{" + topText + "}{" + hideIfOne(coefficients[coefficients.length - 1]) + (letter1s[letter1s.length - 1] > 1 ? letter1 + "^" + letter1s[letter1s.length - 1] : letter1) + (letter2s[letter2s.length - 1] > 1 ? letter2 + "^" + letter2s[letter2s.length - 1] : letter2) + "}", true),
-        answers: ["(" + answerText + ")/" + answerTerms[answerTerms.length - 1]],
-        stepsOfWorking: ["This is a prototype version\n" + ("(" + answerText + ")/" + answerTerms[answerTerms.length - 1]), 0]
-    };
-}
-
 //-----------------------------------------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------------------------
 //Simultaneous Equation algorithms---------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------------------------
-
-function rawNumeric() {
-    var x = randomLetter(); var y = randomLetter();
-    var xValue = random(scalingRange(1, 12), scalingRange(1, 12, false)); var yValue = random(scalingRange(1, 12), scalingRange(1, 12, false));
-    var a = random(scalingRange(1, 8), scalingRange(1, 8, false)); var b = random(scalingRange(1, 8), scalingRange(1, 8, false)); var d = random(scalingRange(1, 8), scalingRange(1, 8, false)); var e = random(scalingRange(1, 8), scalingRange(1, 8, false));
-    var c = a * xValue + b * yValue; var f = d * xValue + e * yValue;
-    return {
-        questionText: "If " + wrapLatex(hideIfOne(a) + x + hideIfOne(b, false) + y + "=" + c) + " and " + wrapLatex(hideIfOne(d) + x + hideIfOne(e, false) + y + "=" + f) + ", what is the value of " + x + "?",
-        answers: [xValue.toString()],
-        stepsOfWorking: ["This is a prototype version\n" + xValue, 0]
-    };
-}
 
 function exchange() {
     var twiceMoney = random(70, 150, false, 2);
