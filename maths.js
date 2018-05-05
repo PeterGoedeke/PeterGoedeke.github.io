@@ -469,8 +469,17 @@ var generate = (function() {
                     stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
                 }
 
-                else if(question == "SolveConversionsToPowers") {
+                else if(question == "solveConversionsToPowers") {
+                    let termWithX = random.number(1, 4);
+                    let base = random.number(2, 5);
+                    let firstTermPower = random.number(2, 3);
+                    let firstTerm = Math.pow(base, firstTermPower);
+                    let rhsPower = random.number(2, 4);
+                    let rhs = Math.pow(base, rhsPower);
 
+                    questionText = format.wrapLatex(`${firstTerm}*${base}^{x${format.evaluatePlus(termWithX)}}=${rhs}`);
+                    answers = [(rhsPower - termWithX - firstTermPower).toString()];
+                    stepsOfWorking = [`This is a prototype version. The answer is ${answers[0]}`];
                 }
 
                 else if(question == "solveRemovingBases") {
