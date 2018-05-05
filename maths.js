@@ -442,6 +442,37 @@ var generate = (function() {
                     stepsOfWorking = `This is a prototype version. The answer is ${xValue}`;
 
                 }
+
+                else if(question == "exchange") {
+                    let twiceMoney = random.number(70, 150, false, "even");
+                    let shift = random.number(4, 30, false, "even");
+                    let answer1 = twiceMoney - shift;
+                    let answer2 = twiceMoney / 2 + shift;
+                    let [name1, name2] = [random.name(), random.name()];
+
+                    let _moneyToGive = (answer1 - answer2) / 2;
+                    questionText = `${name1} has more money than ${name2}. If ${name1} gave ${name2} $${_moneyToGive}, they would have the same amount. 
+                    If instead ${name2} gave ${name1} $${shift}, ${name1} would have twice as much money as ${name2}. 
+                    How much money does each person actually have?`;
+                    answers = [`${answer1},${answer2}`, `${answer2},${answer1}`, `$${answer1},$${answer2}`, `$${answer2},$${answer1}`];
+                    stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`; 
+                }
+
+                else if(question == "ratios") {
+
+                }
+
+                else if(question == "SolveConversionsToPowers") {
+
+                }
+
+                else if(question == "solveRemovingBases") {
+
+                }
+
+                else if(question == "powerInequalities") {
+
+                }
             
                 return {
                     questionText: questionText,
@@ -453,24 +484,6 @@ var generate = (function() {
     };
 })();
 
-//-----------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------
-//Simultaneous Equation algorithms---------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------
-
-function exchange() {
-    var twiceMoney = random(70, 150, false, 2);
-    var shift = random(4, 30, false, 2);
-    var answer1 = twiceMoney - shift; var answer2 = twiceMoney / 2 + shift;
-    var name1 = randomName(); var name2 = randomName();
-    return {
-        questionText: name1 + " has more money than " + name2 + ". If " + name1 + " gave " + name2 + " $" + (answer1 - answer2) / 2 + ", they would have the same amount. If instead " + "" + name2 + " gave " + name1 + " $" + shift + ", " + name1 + " would have twice as much as " + name2 + ". How much money does each person actually have?",
-        answers: [answer1 + "," + answer2, answer2 + "," + answer1, "$" + answer1 + "," + "$" + answer2, "$" + answer2 + "," + "$" + answer1],
-        stepsOfWorking: ["This is a prototype version\n" + ("(" + answer1 + ", " + answer2 + ")"), "(" + answer2 + ", " + answer1 + ")", 0]
-    };
-}
-
 function ratios() {
     var speed1 = 25 - random(2, 15, false, 2); var speed2 = 25 - speed1;
     var distance = random(5, 20);
@@ -481,12 +494,6 @@ function ratios() {
         stepsOfWorking: ["This is a prototype version\n" + distance * 100 / 25 * speed2 / 100, 0]
     };
 }
-
-//-----------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------
-//Power and Exponent algorithms------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------
 
 function solveConversionsToPowers() {
     var termWithX = random(1, 4);
