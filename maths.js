@@ -459,7 +459,14 @@ var generate = (function() {
                 }
 
                 else if(question == "ratios") {
+                    let speed1 = 25 - random.number(2, 15, false, "even");
+                    let speed2 = 25 - speed1;
+                    let distance = random.number(5, 20);
+                    let [name1, name2] = [random.name(), random.name()];
 
+                    questionText = `${name1} and ${name2} live ${distance} km away from each other. ${name1} skateboards ${speed1} km in the same time as  ${name2} rides his bike ${speed2} km. If they both leave home at the same time and travel towards each other, how far from  ${name2}'s home will they meet?`;
+                    answers = [(distance * 100 / 25 * speed2 / 100).toString(), distance * 100 / 25 * speed2 / 100 + "km"];
+                    stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
                 }
 
                 else if(question == "SolveConversionsToPowers") {
@@ -483,17 +490,6 @@ var generate = (function() {
     }
     };
 })();
-
-function ratios() {
-    var speed1 = 25 - random(2, 15, false, 2); var speed2 = 25 - speed1;
-    var distance = random(5, 20);
-    var name1 = randomName(); var name2 = randomName();
-    return {
-        questionText: name1 + " and " + name2 + " live " + distance + "km away from each other. " + name1 + " skateboards " + speed1 + "km in the same time as " + name2 + " rides his" + " bike " + speed2 + "km. If they both leave home at the same time and travel towards each other, how far from " + name2 + "'s home will they meet?",
-        answers: [(distance * 100 / 25 * speed2 / 100).toString(), distance * 100 / 25 * speed2 / 100 + "km"],
-        stepsOfWorking: ["This is a prototype version\n" + distance * 100 / 25 * speed2 / 100, 0]
-    };
-}
 
 function solveConversionsToPowers() {
     var termWithX = random(1, 4);
