@@ -490,6 +490,19 @@ var generate = (function() {
                 }
 
                 else if(question == "powerInequalities") {
+                    let termWithX = random.number(-2, 1);
+                    let base = random.number(2, 4);
+                    let firstTerm = random.number(2, 5);
+                    let rhs = random.number(90, 120);
+                    let result = -1;
+                    answers = [];
+                    for(let i = 1; result < rhs / firstTerm; i++) {
+                        result = Math.pow(base, i + termWithX);
+                        if(result < rhs / firstTerm) answers.push(i);
+                    }
+                    questionText = `If x is a whole number, for what values of x is ${format.wrapLatex(`${firstTerm}*${base}^{x${format.evaluatePlus(termWithX)}}<${rhs}`)}?`;
+                    answers = [answers.toString()];
+                    stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
 
                 }
             
@@ -502,33 +515,6 @@ var generate = (function() {
     }
     };
 })();
-
-function solveRemovingBases() {
-    
-    return {
-        questionText: wrapLatex(base + "^{" + x.b * -1 + "x" + evaluatePlus(x.c * -1) + "}=" + base + "^{x^{2}}") + ". Find the value(s) of x.",
-        answers: [x.answer1 + "," + x.answer2, x.answer2 + "," + x.answer1],
-        stepsOfWorking: ["This is a prototype version\n" + (x.answer1 + ", " + x.answer2), x.answer2 + ", " + x.answer1, 0]
-    };
-}
-
-function powerInequalities() {
-    var termWithX = random(-2, 1);
-    var base = random(2, 4);
-    var firstTerm = random(2, 5);
-    var rhs = random(90, 120);
-    var result = -1;
-    var answers = [];
-    for (var _i6 = 1; result < rhs / firstTerm; _i6++) {
-        result = Math.pow(base, _i6 + termWithX);
-        if (result < rhs / firstTerm) answers.push(_i6);
-    }
-    return {
-        questionText: "If x is a whole number, for what values of x is " + wrapLatex(firstTerm + "*" + base + "^{x" + evaluatePlus(termWithX) + "}<" + rhs) + "?",
-        answers: answers.toString(),
-        stepsOfWorking: ["This is a prototype version\n" + answers, 0]
-    };
-}
 
 var questions = [generate.question("solveQuadratic"), generate.question("solveQuadraticWithRHS"), generate.question("factoriseQuadratic"), generate.question("expandQuadratic"), generate.question("simplifyFraction"), generate.question("solveFraction"), generate.question("oneValueForX"), generate.question("valueAtPoint"), generate.question("howLongPastPoint"), generate.question("whenNegative"), generate.question("solveGivenVariable"), generate.question("rearrangeEquations"), generate.question("rearrangeWithRoot"), generate.question("algebraicWordQuestions"), generate.question("simplify"), generate.question("rawNumeric"), generate.question("exchange"), generate.question("ratios"), generate.question("solveConversionsToPowers"), generate.question("solveRemovingBases"), generate.question("powerInequalities")];
 questions.push(questions[0]);
