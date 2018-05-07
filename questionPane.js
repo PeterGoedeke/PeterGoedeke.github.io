@@ -12,44 +12,22 @@
     const explanationPane = document.querySelector(".explanationPane");
     const explanationArea = document.querySelector(".explanationArea");
 
+    //Refresh display
     function refreshDisplay(displayType) {
-        let text;
-        if(displayType == "question") {
-            selectedCategory = wildcardModeEnabled ? Math.floor(Math.random() * categoryIDs.length) : selectedCategory;
-            currentQuestion = generate.question(categoryIDs[selectedCategory]);
-            text = "<div>" + currentQuestion.questionText + "</div>";
-        }
-        else if(displayType = "working") {
-            text = "<div>" + currentQuestion.stepsOfWorking + "</div>";
-        }
-        displayArea.innerHTML = text;
-        displayArea.style.color = "white";
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub], () => displayArea.style.color = "black");
+        setDisplayAreaText(displayType);
+        refreshMathJax(displayArea);
         document.querySelector(".questionPaneHeading").textContent = currentQuestion.headingText;
         inputBox.placeholder = currentQuestion.placeholderText;
+        console.log(currentQuestion.answers);
     }
 
     //Validate input
     inputForm.addEventListener("submit", validate);
     function validate(event) {
         event.preventDefault();
-        const field = inputBox;
-        const userAnswer = field.value.replace(/\s/g, '');
-        field.value = "";
-
-        let answeredCorrectly = false;
-        if(currentQuestion.answers.includes(userAnswer)) answeredCorrectly = true;
-
-        if(answeredCorrectly) {
-            field.classList.add("correct");
-            if(currentDifficulty < 9) currentDifficulty += 0.25;
-        } else {
-            field.classList.add("incorrect");
-            if(currentDifficulty >= 2) currentDifficulty -= 2.25;
-            else currentDifficulty = 0;
-        }
-        document.querySelector(".difficultyArrow").style.bottom = (currentDifficulty / 9) * 95 + '%';
-        setTimeout(() => {field.classList.remove("correct"); field.classList.remove("incorrect")}, 1000);
+        var answeredCorrectly = markAnswer();
+        inputBox.value = "";
+        adjustDifficulty(answeredCorrectly);
         let displayType = answeredCorrectly ? "question" : "working";
         refreshDisplay(displayType);
     }
@@ -58,11 +36,10 @@
     document.querySelector(".categories").addEventListener("click", openPopup);
     function openPopup(event) {
         if(event.target.tagName == "UL") return;
-        currentDifficulty = 0;
-        selectedCategory = event.target.classList.value;
-        selectedCategory == 21 ? wildcardModeEnabled = true : wildcardModeEnabled = false;
+        adjustDifficulty("reset");
+        checkForWildcard();
         refreshDisplay("question");
-        document.querySelector(".questionPane").classList.remove("hidden");
+        questionPane.classList.remove("hidden");
         inputBox.focus();
     }
 
@@ -72,20 +49,18 @@
         const closeBoth = ["categories", "page", "landing", "landingimg", "back"];
         const closeExplanation = ["displayArea", "backe"];
         if(closeBoth.includes(event.target.classList.value.toString())) {
-            document.querySelector(".questionPane").classList.add("hidden");
-            document.querySelector(".explanationPane").classList.add("hidden");
+            questionPane.classList.add("hidden");
+            explanationPane.classList.add("hidden");
         } else if(closeExplanation.includes(event.target.classList.value)) {
-            document.querySelector(".explanationPane").classList.add("hidden");
+            explanationPane.classList.add("hidden");
         }
     }
 
     //Open explanation pane
     document.querySelector(".tab").addEventListener("click", openExplanationPane);
     function openExplanationPane() {
-        document.querySelector(".explanationArea").innerHTML = "<div>" + currentQuestion.explanationText + "</div>";
-        document.querySelector(".explanationArea").style.color = "white";
-        MathJax.Hub.Queue(["Typeset",MathJax.Hub], () => document.querySelector(".explanationArea").style.color = "black");
-        document.querySelector(".explanationPane").classList.remove("hidden");
+        refreshExplanationDisplay();
+        explanationPane.classList.remove("hidden");
     }
 
     //Move input for mobile devices
@@ -103,5 +78,55 @@
     function remove(event) {
         clearTimeout(scrollTimeOut);
         removeEventListener("scroll", remove);
+    }
+
+    function refreshMathJax(element) {
+        element.style.color = "white";
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub], () => element.style.color = "black");
+    }
+
+    function setDisplayAreaText(displayType) {
+        let text;
+        if(displayType == "question") {
+            selectedCategory = wildcardModeEnabled ? Math.floor(Math.random() * categoryIDs.length) : selectedCategory;
+            currentQuestion = generate.question(categoryIDs[selectedCategory]);
+            text = "<div>" + currentQuestion.questionText + "</div>";
+        }
+        else if(displayType = "working") {
+            text = "<div>" + currentQuestion.stepsOfWorking + "</div>";
+        }
+        displayArea.innerHTML = text;
+    }
+
+    function markAnswer() {
+        const answeredCorrectly = !!currentQuestion.answers.includes(inputBox.value.replace(/\s/g, ''));
+        if(answeredCorrectly) inputBox.classList.add("correct");
+        else inputBox.classList.add("incorrect");
+        setTimeout(() => {inputBox.classList.remove("correct"); inputBox.classList.remove("incorrect")}, 1000);
+        return answeredCorrectly;
+    }
+
+    function adjustDifficulty(answeredCorrectly) {
+        if(answeredCorrectly == "reset") {
+            currentDifficulty = 0;
+            return;
+        }
+        if(answeredCorrectly) {
+            if(currentDifficulty < 9) currentDifficulty += 0.25;
+        } else {
+            if(currentDifficulty >= 2) currentDifficulty -= 2.25;
+            else currentDifficulty = 0;
+        }
+        document.querySelector(".difficultyArrow").style.bottom = (currentDifficulty / 9) * 95 + '%';
+    }
+
+    function checkForWildcard() {
+        selectedCategory = event.target.classList.value;
+        selectedCategory == 21 ? wildcardModeEnabled = true : wildcardModeEnabled = false;
+    }
+
+    function refreshExplanationDisplay() {
+        explanationArea.innerHTML = "<div>" + currentQuestion.explanationText + "</div>";
+        refreshMathJax(explanationArea);
     }
 })();
