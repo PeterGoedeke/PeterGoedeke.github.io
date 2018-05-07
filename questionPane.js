@@ -1,8 +1,6 @@
-var categoryIDs = ["solveQuadratic", "solveQuadraticWithRHS", "factoriseQuadratic", "expandQuadratic", "simplifyFraction", "solveFraction", "oneValueForX", "valueAtPoint", "howLongPastPoint", "whenNegative", "solveGivenVariable", "rearrangeEquations", "rearrangeWithRoot", "algebraicWordQuestions", "simplify", "rawNumeric", "exchange", "ratios", "solveConversionsToPowers", "solveRemovingBases", "powerInequalities"];
-
-var exampleFormats = ["a, b", "a, b", "(x+a)(x+b)", "ax^2+bx-c", "(x+a)/(x+b)", "a, b", "a", "a", "a", "a>x>b", "a", "a=b+c", "(a^b)/c=d+e", "a", "(a+b)/c", "a", "a, b", "a", "a", "a, b", "a, b, c"];
-
 (function() {
+    var categoryIDs = ["solveQuadratic", "solveQuadraticWithRHS", "factoriseQuadratic", "expandQuadratic", "simplifyFraction", "solveFraction", "oneValueForX", "valueAtPoint", "howLongPastPoint", "whenNegative", "solveGivenVariable", "rearrangeEquations", "rearrangeWithRoot", "algebraicWordQuestions", "simplify", "rawNumeric", "exchange", "ratios", "solveConversionsToPowers", "solveRemovingBases", "powerInequalities"];
+
     var selectedCategory;
     var currentQuestion;
     var wildcardModeEnabled;
@@ -21,7 +19,7 @@ var exampleFormats = ["a, b", "a, b", "(x+a)(x+b)", "ax^2+bx-c", "(x+a)/(x+b)", 
         document.querySelector(".displayArea").style.color = "white";
         MathJax.Hub.Queue(["Typeset", MathJax.Hub], () => document.querySelector(".displayArea").style.color = "black");
         document.querySelector(".questionPaneHeading").textContent = currentQuestion.headingText;
-        document.querySelector(".inputBox").placeholder = exampleFormats[selectedCategory];
+        document.querySelector(".inputBox").placeholder = currentQuestion.placeholderText;
         console.log(currentDifficulty);
         console.log(currentQuestion.answers);
     }
