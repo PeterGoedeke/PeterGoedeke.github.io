@@ -5,6 +5,13 @@
     var currentQuestion;
     var wildcardModeEnabled;
 
+    const displayArea = document.querySelector(".displayArea");
+    const inputBox = document.querySelector(".inputBox");
+    const inputForm = document.querySelector(".inputForm");
+    const questionPane = document.querySelector(".questionPane");
+    const explanationPane = document.querySelector(".explanationPane");
+    const explanationArea = document.querySelector(".explanationArea");
+
     function refreshDisplay(displayType) {
         let text;
         if(displayType == "question") {
@@ -15,26 +22,18 @@
         else if(displayType = "working") {
             text = "<div>" + currentQuestion.stepsOfWorking + "</div>";
         }
-        document.querySelector(".displayArea").innerHTML = text;
-        document.querySelector(".displayArea").style.color = "white";
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub], () => document.querySelector(".displayArea").style.color = "black");
+        displayArea.innerHTML = text;
+        displayArea.style.color = "white";
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub], () => displayArea.style.color = "black");
         document.querySelector(".questionPaneHeading").textContent = currentQuestion.headingText;
-        document.querySelector(".inputBox").placeholder = currentQuestion.placeholderText;
-        console.log(currentDifficulty);
-        console.log(currentQuestion.answers);
+        inputBox.placeholder = currentQuestion.placeholderText;
     }
 
-    var scrollTimeOut = setTimeout(() => $('html, body').animate({scrollTop: $(".page").offset().top}, 2000), 1500);
-    addEventListener("scroll", remove);
-    function remove(event) {
-        clearTimeout(scrollTimeOut);
-        removeEventListener("scroll", remove);
-    }
-
-    document.querySelector(".inputForm").addEventListener("submit", validate);
+    //Validate input
+    inputForm.addEventListener("submit", validate);
     function validate(event) {
         event.preventDefault();
-        const field = document.querySelector(".inputBox");
+        const field = inputBox;
         const userAnswer = field.value.replace(/\s/g, '');
         field.value = "";
 
@@ -55,10 +54,10 @@
         refreshDisplay(displayType);
     }
 
+    //Open popup
     document.querySelector(".categories").addEventListener("click", openPopup);
     function openPopup(event) {
         if(event.target.tagName == "UL") return;
-        const inputBox = document.querySelector(".inputBox");
         currentDifficulty = 0;
         selectedCategory = event.target.classList.value;
         selectedCategory == 21 ? wildcardModeEnabled = true : wildcardModeEnabled = false;
@@ -67,6 +66,7 @@
         inputBox.focus();
     }
 
+    //Close popup
     window.addEventListener("click", closePopup);
     function closePopup(event) {
         const closeBoth = ["categories", "page", "landing", "landingimg", "back"];
@@ -79,6 +79,7 @@
         }
     }
 
+    //Open explanation pane
     document.querySelector(".tab").addEventListener("click", openExplanationPane);
     function openExplanationPane() {
         document.querySelector(".explanationArea").innerHTML = "<div>" + currentQuestion.explanationText + "</div>";
@@ -87,12 +88,20 @@
         document.querySelector(".explanationPane").classList.remove("hidden");
     }
 
-    document.querySelector(".inputBox").addEventListener("focus", moveInputForMobile);
+    //Move input for mobile devices
+    inputBox.addEventListener("focus", moveInputForMobile);
     function moveInputForMobile() {
-        const form = document.querySelector(".inputForm");
+        const form = inputForm;
         if(window.outerWidth <= 480) form.style.bottom = "10%";
         else form.style.bottom = "1%";
     }
-    document.querySelector(".inputBox").addEventListener("focusout", () => document.querySelector(".inputForm").style.bottom = "1%");
+    inputBox.addEventListener("focusout", () => inputForm.style.bottom = "1%");
 
+    //Autoscroll
+    var scrollTimeOut = setTimeout(() => $('html, body').animate({scrollTop: $(".page").offset().top}, 2000), 1500);
+    addEventListener("scroll", remove);
+    function remove(event) {
+        clearTimeout(scrollTimeOut);
+        removeEventListener("scroll", remove);
+    }
 })();
