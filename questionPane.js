@@ -1,7 +1,4 @@
-
-
-var questions = [generate.question("solveQuadratic"), generate.question("solveQuadraticWithRHS"), generate.question("factoriseQuadratic"), generate.question("expandQuadratic"), generate.question("simplifyFraction"), generate.question("solveFraction"), generate.question("oneValueForX"), generate.question("valueAtPoint"), generate.question("howLongPastPoint"), generate.question("whenNegative"), generate.question("solveGivenVariable"), generate.question("rearrangeEquations"), generate.question("rearrangeWithRoot"), generate.question("algebraicWordQuestions"), generate.question("simplify"), generate.question("rawNumeric"), generate.question("exchange"), generate.question("ratios"), generate.question("solveConversionsToPowers"), generate.question("solveRemovingBases"), generate.question("powerInequalities")];
-questions.push(questions[0]);
+var categoryIDs = ["solveQuadratic", "solveQuadraticWithRHS", "factoriseQuadratic", "expandQuadratic", "simplifyFraction", "solveFraction", "oneValueForX", "valueAtPoint", "howLongPastPoint", "whenNegative", "solveGivenVariable", "rearrangeEquations", "rearrangeWithRoot", "algebraicWordQuestions", "simplify", "rawNumeric", "exchange", "ratios", "solveConversionsToPowers", "solveRemovingBases", "powerInequalities"];
 
 var questionNames = ["Solve Quadratics", "Solve Quadratics With RHS", "Factorise Quadratics", "Expand Quadratics", "Simplify Fractions", "Solve Fractions", "Find One Value For x", "Find Value At Point", "Find Time Past Point", "Find When Quadratic Is Negative", "Solve Given Variable", "Rearrange Equations", "Rearrange Equations With Root", "Algebraic Word Questions", "Remove Common Factors", "Simple Simultaneous Equations", "Simultaneous Equations 1", "Simultaneous Equations 2", "Solve Powers", "Solve Removing Bases", "Power Inequalities", "Wildcard Questions"];
 
@@ -10,155 +7,101 @@ var questionExplanations = ["Solving a quadratic means finding values for x whic
 var exampleFormats = ["a, b", "a, b", "(x+a)(x+b)", "ax^2+bx-c", "(x+a)/(x+b)", "a, b", "a", "a", "a", "a>x>b", "a", "a=b+c", "(a^b)/c=d+e", "a", "(a+b)/c", "a", "a, b", "a", "a", "a, b", "a, b, c"];
 exampleFormats.push(exampleFormats[0]);
 
-
-var scrollTimeOut = setTimeout(() => $('html, body').animate({scrollTop: $(".page").offset().top}, 2000), 1500);
-addEventListener("scroll", remove);
-function remove(event) {
-    clearTimeout(scrollTimeOut);
-    removeEventListener("scroll", remove);
-}
-
 var visible = false;
-var wildcard = false;
 var selectedQuestion = NaN;
 var userAnswer = NaN;
 var currentQuestion = NaN;
 
-$(document).click(function(event) {
-    if($(event.target).closest("li").length) {
-        $(".questionPane").removeClass("hidden");
-        $(".inputBox").removeClass("hidden");
-        visible = true;
+(function() {
+    var selectedCategory;
+    var currentQuestion;
+    var wildcardModeEnabled
+
+    function refreshDisplay(displayType) {
+        document.querySelector(".questionPaneHeading").textContent = questionNames[selectedCategory];
+        let text;
+        if(displayType == "question") {
+            selectedCategory = wildcardModeEnabled ? Math.floor(Math.random() * questions.length) : selectedCategory;
+            currentQuestion = generate.question(categoryIDs[selectedCategory]);
+            text = "<div>" + currentQuestion.questionText + "</div>";
+        }
+        else if(displayType = "working") {
+            text = "<div>" + currentQuestion.stepsOfWorking + "</div>";
+        }
+        document.querySelector(".displayArea").innerHTML = text;
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$("#explanationPane").css('color', 'black');});
+        document.querySelector(".inputBox").placeholder = exampleFormats[selectedCategory];
+    }
+
+    var scrollTimeOut = setTimeout(() => $('html, body').animate({scrollTop: $(".page").offset().top}, 2000), 1500);
+    addEventListener("scroll", remove);
+    function remove(event) {
+        clearTimeout(scrollTimeOut);
+        removeEventListener("scroll", remove);
+    }
+
+    document.querySelector(".inputForm").addEventListener("submit", validate);
+    function validate(event) {
+        event.preventDefault();
+        const field = document.querySelector(".inputBox");
+        const userAnswer = field.value.replace(/\s/g, '');
+        field.value = "";
+
+        let answeredCorrectly = false;
+        if(currentQuestion.answers.includes(userAnswer)) answeredCorrectly = true;
+
+        if(answeredCorrectly) {
+            field.classList.add("correct");
+            if(currentDifficulty < 9) currentDifficulty += 0.25;
+        } else {
+            field.classList.add("incorrect");
+            if(currentDifficulty >= 2) currentDifficulty -= 2.25;
+            else currentDifficulty = 0;
+        }
+        console.log(currentDifficulty);
+        document.querySelector(".difficultyArrow").style.bottom = (currentDifficulty / 9) * 95 + '%';
+        setTimeout(() => {field.classList.remove("correct"); field.classList.remove("incorrect")}, 1000);
+        let displayType = answeredCorrectly ? "question" : "working";
+        refreshDisplay(displayType);
+    }
+
+    document.querySelector(".categories").addEventListener("click", openPopup);
+    function openPopup(event) {
+        if(event.target.tagName == "UL") return;
+        const inputBox = document.querySelector(".inputBox");
         currentDifficulty = 0;
-        console.log(currentDifficulty);
-        selectedQuestion = event.target.id;
-        if(selectedQuestion == 21) wildcard = true; else wildcard = false;
-        $(".questionPaneHeading").text(questionNames[selectedQuestion]);
-        refreshQuestion();
-        $(".inputBox input").attr("placeholder", exampleFormats[selectedQuestion]);
-        $(".inputBox input").focus();
-    } else if(visible) {
-        if(!$(event.target).closest(".questionPane").length && !$(event.target).closest(".explanationPane").length) {
-            $(".questionPane").addClass("hidden");
-            visible = false;
-            selectedQuestion = NaN;
+        selectedCategory = event.target.classList.value;
+        document.querySelector(".questionPaneHeading").textContent = questionNames[selectedQuestion];
+        refreshDisplay("question");
+        document.querySelector(".questionPane").classList.remove("hidden");
+        inputBox.focus();
+    }
+
+    window.addEventListener("click", closePopup);
+    function closePopup(event) {
+        const closeBoth = ["categories", "page", "landing", "landingimg", "back"];
+        const closeExplanation = ["displayArea", "backe"];
+        if(closeBoth.includes(event.target.classList.value.toString())) {
+            document.querySelector(".questionPane").classList.add("hidden");
+            document.querySelector(".explanationPane").classList.add("hidden");
+        } else if(closeExplanation.includes(event.target.classList.value)) {
+            document.querySelector(".explanationPane").classList.add("hidden");
         }
     }
-    if($(event.target).closest(".tab").length) {
-        $(".explanationArea").html("<div>" + questionExplanations[selectedQuestion] + "</div>");
-        $(".explanationPane").css('color', 'white'); MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$(".explanationPane").css('color', 'black');});
-        $(".explanationPane").removeClass("hidden");
-    } else if(!$(event.target).closest(".explanationPane").length) $(".explanationPane").addClass("hidden");
-    if($(event.target).closest(".back").length) {
-        $(".questionPane").addClass("hidden");
-        visible = false;
-        selectedQuestion = NaN;
-    }
-    if($(event.target).closest(".backe").length) $(".explanationPane").addClass("hidden");
-});
 
-$(document).keypress(function(event) {
-    if(event.which == 13 && $(".inputBox input").is(":focus") && $("input").val() != '') {
-        $(".inputBox").trigger('submit');
+    document.querySelector(".tab").addEventListener("click", openExplanationPane);
+    function openExplanationPane() {
+        document.querySelector(".explanationArea").innerHTML = "<div>" + questionExplanations[selectedCategory] + "</div>";
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+        document.querySelector(".explanationPane").classList.remove("hidden");
     }
-});
 
-var includes = false;
-$(".inputBox").submit(function(event) {
-    var userAnswer = $(".inputBox input").val().replace(/ /g, '');
-    $(".inputBox input").val("");
-    for(let i = 0; i < currentQuestion.answers.length; i ++) {
-        if(currentQuestion.answers[i] === userAnswer) {
-            includes = true;
-            break;
-        }
+    document.querySelector(".inputBox").addEventListener("focus", moveInputForMobile);
+    function moveInputForMobile() {
+        const form = document.querySelector(".inputForm");
+        if(window.outerWidth <= 480) form.style.bottom = "10%";
+        else form.style.bottom = "1%";
     }
-    if(includes) {
-        $(".inputBox input").addClass("correct");
-        if(currentDifficulty < 9) currentDifficulty += 0.25;
-        $(".difficultyArrow").css('bottom', (currentDifficulty / 9) * 95 + '%');
-        console.log(currentDifficulty);
-        setTimeout(function() {
-            $(".inputBox input").removeClass("correct");
-        }, 1000);
-        refreshQuestion();
-    } else {
-        $(".displayArea").html("<div>" + currentQuestion.stepsOfWorking + "</div>");
-        $(".displayArea").css('color', 'white'); MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$(".displayArea").css('color', 'black');});
-        $(".inputBox input").addClass("incorrect");
-        if(currentDifficulty >= 2) currentDifficulty -= 2.25; else currentDifficulty = 0;
-        $(".difficultyArrow").css('bottom', (currentDifficulty / 9) * 95 + '%');
-        setTimeout(function() {
-            $(".inputBox input").removeClass("incorrect");
-        }, 1000);
-    }
-    includes = false;
-    return false;
-});
+    document.querySelector(".inputBox").addEventListener("focusout", () => document.querySelector(".inputForm").style.bottom = "1%");
 
-function refreshQuestion() {
-    selectedQuestion = wildcard ? Math.floor(Math.random() * questions.length) : selectedQuestion;
-    currentQuestion = questions[selectedQuestion]();
-    $(".displayArea").html("<div>" + currentQuestion.questionText + "</div>");
-    $(".displayArea").css('color', 'white'); MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$(".displayArea").css('color', 'black');});
-    $(".inputBox input").attr("placeholder", exampleFormats[selectedQuestion]);
-    console.log(currentQuestion.answers);
-}
-
-$("input").on('focus', function() {
-    if($(window).width() <= 480) $(".inputBox").css('bottom', '10%');
-    else $(".inputBox").css('bottom', '1%');
-});
-$("input").on('focusout', function() {
-    $(".inputBox").css('bottom', '1%');
-});
-
-/*
-function resize() {
-    if(toggle) {
-        questionPaneHeight = $(".questionPaneHeading").height() * 1.1 + $(".displayArea").height() * 1.35;
-        if(questionPaneHeight > 150) $(".landing").css("height", questionPaneHeight + "px"); else $(".landing").css("height", 100 + "vh");
-        displayAreaTopMargin = $(".questionPaneHeading").height();
-    } else {
-        $(".landing").css("height", 100 + "vh");
-        displayAreaTopMargin = ($(".questionPane").height() - $(".displayArea").height()) / 2 - $(".questionPaneHeading").height();
-    }
-    $(".displayArea").css("margin-top", displayAreaTopMargin, + "px");
-}
-$(document).ready(resize);
-window.onresize = resize;
-*/
-
-/*
-$(".inputBox").keydown(function(e) {
-    if(e.which == 13) {
-        userAnswer = $(".inputBox").val();
-        console.log(userAnswer);
-        //$(".inputBox").submit();
-    }
-});
-*/
-/*
-let j = 0;
-function changeQuestion(id) {
-    console.clear();
-    id.innerHTML = "";
-    for(let i = 0; i < 50; i ++){
-        displayElement("ID: " + i + " Question: " + questions[j]().questionText);
-        console.log("Question: " + i + " Answers: "+ questions[j]().answers);
-    }
-    j ++;
-    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
-}
-
-for(let i = 0; i < 10; i ++){
-    var question = solveQuadraticWithRHS();
-    displayElement("ID: " + i + " Question: " + question.questionText);
-    console.log("Question: " + i + " Answers: "+ question.answers);
-}
-function displayElement(element) {
-    var equationHTML = document.createElement("p");
-    equationHTML.appendChild(document.createTextNode(element));
-    document.getElementById("test").appendChild(equationHTML);
-}
-*/
+})();
