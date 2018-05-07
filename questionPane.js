@@ -1,3 +1,7 @@
+var questionData = (function() {
+
+}());
+
 var categoryIDs = ["solveQuadratic", "solveQuadraticWithRHS", "factoriseQuadratic", "expandQuadratic", "simplifyFraction", "solveFraction", "oneValueForX", "valueAtPoint", "howLongPastPoint", "whenNegative", "solveGivenVariable", "rearrangeEquations", "rearrangeWithRoot", "algebraicWordQuestions", "simplify", "rawNumeric", "exchange", "ratios", "solveConversionsToPowers", "solveRemovingBases", "powerInequalities"];
 
 var questionNames = ["Solve Quadratics", "Solve Quadratics With RHS", "Factorise Quadratics", "Expand Quadratics", "Simplify Fractions", "Solve Fractions", "Find One Value For x", "Find Value At Point", "Find Time Past Point", "Find When Quadratic Is Negative", "Solve Given Variable", "Rearrange Equations", "Rearrange Equations With Root", "Algebraic Word Questions", "Remove Common Factors", "Simple Simultaneous Equations", "Simultaneous Equations 1", "Simultaneous Equations 2", "Solve Powers", "Solve Removing Bases", "Power Inequalities", "Wildcard Questions"];
@@ -7,21 +11,15 @@ var questionExplanations = ["Solving a quadratic means finding values for x whic
 var exampleFormats = ["a, b", "a, b", "(x+a)(x+b)", "ax^2+bx-c", "(x+a)/(x+b)", "a, b", "a", "a", "a", "a>x>b", "a", "a=b+c", "(a^b)/c=d+e", "a", "(a+b)/c", "a", "a, b", "a", "a", "a, b", "a, b, c"];
 exampleFormats.push(exampleFormats[0]);
 
-var visible = false;
-var selectedQuestion = NaN;
-var userAnswer = NaN;
-var currentQuestion = NaN;
-
 (function() {
     var selectedCategory;
     var currentQuestion;
-    var wildcardModeEnabled
+    var wildcardModeEnabled;
 
     function refreshDisplay(displayType) {
-        document.querySelector(".questionPaneHeading").textContent = questionNames[selectedCategory];
         let text;
         if(displayType == "question") {
-            selectedCategory = wildcardModeEnabled ? Math.floor(Math.random() * questions.length) : selectedCategory;
+            selectedCategory = wildcardModeEnabled ? Math.floor(Math.random() * categoryIDs.length) : selectedCategory;
             currentQuestion = generate.question(categoryIDs[selectedCategory]);
             text = "<div>" + currentQuestion.questionText + "</div>";
         }
@@ -29,7 +27,9 @@ var currentQuestion = NaN;
             text = "<div>" + currentQuestion.stepsOfWorking + "</div>";
         }
         document.querySelector(".displayArea").innerHTML = text;
-        MathJax.Hub.Queue(["Typeset",MathJax.Hub], function() {$("#explanationPane").css('color', 'black');});
+        document.querySelector(".displayArea").style.color = "white";
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub], () => document.querySelector(".displayArea").style.color = "black");
+        document.querySelector(".questionPaneHeading").textContent = questionNames[selectedCategory];
         document.querySelector(".inputBox").placeholder = exampleFormats[selectedCategory];
     }
 
@@ -71,7 +71,7 @@ var currentQuestion = NaN;
         const inputBox = document.querySelector(".inputBox");
         currentDifficulty = 0;
         selectedCategory = event.target.classList.value;
-        document.querySelector(".questionPaneHeading").textContent = questionNames[selectedQuestion];
+        selectedCategory == 21 ? wildcardModeEnabled = true : wildcardModeEnabled = false;
         refreshDisplay("question");
         document.querySelector(".questionPane").classList.remove("hidden");
         inputBox.focus();
@@ -92,7 +92,8 @@ var currentQuestion = NaN;
     document.querySelector(".tab").addEventListener("click", openExplanationPane);
     function openExplanationPane() {
         document.querySelector(".explanationArea").innerHTML = "<div>" + questionExplanations[selectedCategory] + "</div>";
-        MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+        document.querySelector(".explanationArea").style.color = "white";
+        MathJax.Hub.Queue(["Typeset",MathJax.Hub], () => document.querySelector(".explanationArea").style.color = "black");
         document.querySelector(".explanationPane").classList.remove("hidden");
     }
 
