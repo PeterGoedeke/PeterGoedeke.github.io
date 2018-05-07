@@ -132,6 +132,8 @@ var generate = (function() {
             var questionText;
             var answers;
             var stepsOfWorking;
+            var headingText;
+            var explanationText = "This is a prototype version.";
 
             if(question == "solveQuadratic") {
                 let questionType = random.coinflip();
@@ -155,6 +157,37 @@ var generate = (function() {
                     (6) Find the values for x which make a set of brackets equal to 0. These are ${_answer1} and ${_answer2}<br>
                     (7) These are your answers.`;
                 stepsOfWorking = quadratic.a == 1 ? aValueIsOneWorking : aValueIsNotOneWorking;
+
+                headingText = "Solve Quadratics";
+                explanationText = "Solving a quadratic means finding values for x which make the equation true. An example of a quadratic equation would be $$x^2+5x+6$$ To make this equation true, the quadratic expression on the left hand side must equal 0.\nTo do this, find the two numbers which add up to equal the coefficient to x, and multiply to equal the constant.\nFor this particular quadratic, the numbers 2 and 3 add to equal 5, and multiply to equal 6.\nThe inverse of these two numbers (a.k.a. these two numbers multiplied by -1) are the solutions to the quadratic; therefore, -2 and -3 are the solutions for this quadratic.";
+            }
+
+            else if(question == "solveQuadraticWithRHS") {
+                let rhs = random.number(1, 150);
+                quadratic.c = quadratic.c + rhs;
+                let _quadraticNew = format.asQuadratic(quadratic);
+
+                questionText = `A rectangle has the area of ${_quadraticNew}. If the area of the rectangle is ${rhs}, what is the value(s) of x?`;
+                answers = [quadratic.answer1 + "," + quadratic.answer2, quadratic.answer2 + "," + quadratic.answer1];
+                
+                const AC = quadratic.a * (quadratic.c - rhs);
+                stepsOfWorking = quadratic.a == 1 ? `${_quadraticNew}${format.wrapLatex("=" + rhs)}<br>
+                (1) Quadratics can only be solved if the right hand side is equal to 0. Therefore, the first step is to rearrange by subtracting ${rhs} from both sides to get ${_quadratic + format.wrapLatex("=0")}<br>
+                (2) Find the two numbers which add to equal the coefficient of x and multiply to equal the constant. These are ${_factor1} and ${_factor2}<br>
+                (3) Multiply these numbers by negative 1 to get ${_answer1} and ${_answer2}<br>
+                (4). These are your answers.` :
+                `${_quadraticNew + format.wrapLatex("=" + rhs)}<br>
+                (1) Quadratics can only be solved if the right hand side is equal to 0. Therefore, the first step is to rearrange by subtracting ${rhs} from both sides to get ${_quadratic}${format.wrapLatex("=0")}<br>
+                (2) Find the product of the coefficient of ${X2} and the constant, ${AC}<br>
+                (3) Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, ${quadratic.workingAnswer1} and ${quadratic.workingAnswer2}.<br>
+                (4) Split the coefficient of x into these two numbers, ${format.wrapLatex(quadratic.a + "x^2" + format.hideIfOne(quadratic.workingAnswer1, false) + "x" + format.hideIfOne(quadratic.workingAnswer2, false) + "x" + format.evaluatePlus(quadratic.c - rhs))}<br>
+                (5) Factorise the first two terms and the last two terms, ${format.wrapLatex(quadratic.a + "x(x" + format.evaluatePlus(quadratic.workingAnswer1 / quadratic.a) + ")" + format.evaluatePlus(quadratic.workingAnswer2) + "(x" + format.evaluatePlus(((quadratic.c - rhs) / quadratic.workingAnswer2)) + ")")}<br>
+                (6) Finish factorisation ${"(" + format.wrapLatex(quadratic.a + "x" + format.evaluatePlus(quadratic.workingAnswer2) + ")(x" + format.evaluatePlus(_factor1) + ")")}<br>
+                (7) Find the values for x which make a set of brackets equal to 0. These are ${_answer1} and ${_answer2}<br>
+                (8) These are your answers.`;
+
+                headingText = "Solve Quadratics With RHS";
+                explanationText = "Quadratic equations can only be solved if the right hand side is equal to zero. This means that the only way to solve a quadratic which has a right hand size which is not equal to zero is to rearrange so that the right hand side is equal to zero. An example of a quadratic equation with a right hand side would be $$x^2-15x+58=8$$ To solve this, 8 must be subtracted from both sides to make the right hand side equal to zero. To solve from here, see the explanation for the 'Solve Quadratics' category.";
             }
 
             else if(question == "factoriseQuadratic") {
@@ -184,7 +217,19 @@ var generate = (function() {
                 (3) Split the coefficient of x into these two numbers, ${format.wrapLatex(quadratic.a + "x^2" + format.hideIfOne(quadratic.workingAnswer1, false) + format.hideIfOne(quadratic.workingAnswer2) + "x" + format.evaluatePlus(quadratic.c))}<br>
                 (4) Factorise the first two terms and the last two terms, ${format.wrapLatex(quadratic.a + "x(x" + format.evaluatePlus(quadratic.workingAnswer1 / quadratic.a) + ")" + format.evaluatePlus(quadratic.workingAnswer2) + "(x" + format.evaluatePlus(quadratic.c / quadratic.workingAnswer2) + ")")}<br>
                 (5) Finish factorisation, ${format.wrapLatex("(" + quadratic.a + "x" + format.evaluatePlus(quadratic.workingAnswer2) + ")(x" + format.evaluatePlus(_factor1) + ")")}<br>
-                (6) This is your answer.`;            
+                (6) This is your answer.`;
+                
+                headingText = "Factorise Quadratics";
+                explanationText = "Factorising a Quadratic means converting a quadratic expression into two sets of brackets which, when expanded, are equal to the original quadratic. For example, if you expand \\((x+2)(x+1)\\), you will see that it is equal to \\(x^2+3x+2\\).To factorise a quadratic, find the two numbers which add up to equal the coefficient of x, and multiply to equal the constant. For example, the numbers 2 and 1 add to equal 3, and multiply to equal 6.The factorised quadratic is two sets of brackets which each contain x and one of these numbers. If \\(x^2\\) has a coefficient, then the process is different. Instead of finding two numbers which add to equal the coefficient of x and multiply to equal the constant, you find two numbers which add to equal the coefficient of x and multiple to equal the constant multiplied by the coefficient of \\(x^2\\). For example, if the quadratic was \\(2x^2-8x+6\\), then these numbers would be -6 and -2, as they multiply to equal 12. The next step is then to" + " break the coefficient of x up into these two values. In this example this would result in the expression \\(2x^2-2x-6x+6\\). From here, the equation can be factorised easily by finding the common factors of the first two terms, and then the common factors of the second two terms. In this example, this would result in the expression \\(2x(x-1)-6(x-1)\\). This means that you have 2x lots of (x-1) and -6 lots of (x-1). This is the same as (2x-6) lots of (x-1). Therefore, the final step is simply to finish factorising. In this example, this would result in the expression \\((2x-6)(x-1)\\).";
+            }
+
+            else if(question == "expandQuadratic") {
+                questionText = `Expand ${_fQuadratic}`;
+                answers = [format.asQuadratic(quadratic, false)];
+                stepsOfWorking = `This is a prototype version. The answers are ${answers[0]}`;
+
+                headingText = "Expand Quadratics";
+                explanationText = "Expanding quadratics simply means multipling every term in the first set of brackets by every term in the second set of brackets. For example, \\((x-3)(x+2)\\) becomes \\(x^2-x-6\\).";
             }
 
             else if(question == "simplifyFraction") {
@@ -194,6 +239,9 @@ var generate = (function() {
                 questionText = `Simplify \\(\\frac\{${format.asQuadratic(numeratorQuadratic, false)}\}\{${format.asQuadratic(denominatorQuadratic, false)}\}\\)`;
                 answers = [`(x${format.evaluatePlus(numeratorQuadratic.answer2 * -1)})/(x${format.evaluatePlus(denominatorQuadratic.answer2 * -1)})`];
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}`;
+
+                headingText = "Simplify Fractions";
+                explanationText = "Simplifying a fraction simply means factorising the top half of the fraction, factorising the bottomm half of the equation, and then cancelling out the common factor which appears in the top and bottom half. For example, the fraction $$\\frac{x^2-2x-8}{x^2-x-6}$$ factorises to $$\\frac{(x-4)(x+2)}{(x-3)(x+2)}$$ Both the top and the bottom halves of the fraction contain the term (x+2), which can be cancelled out. The final answer is $$\\frac{x-4}{x-3}$$";
             }
 
             else if(question == "solveFraction") {
@@ -232,12 +280,8 @@ var generate = (function() {
                 questionText = `Solve \\(\\frac\{${format.asQuadratic(numeratorQuadratic, false)}\}\{${format.asQuadratic(denominatorQuadratic, false)}\}=\\frac\{${rhsNumerator}\}\{${rhsDenominator}\}\\)`;
                 answers = [answer1 + "," + answer2, answer2 + "," + answer1];
                 stepsOfWorking = `This is a prototype version. The answers are ${answer1} and ${answer2}`;
-            }
 
-            else if(question == "expandQuadratic") {
-                questionText = `Expand ${_fQuadratic}`;
-                answers = [format.asQuadratic(quadratic, false)];
-                stepsOfWorking = `This is a prototype version. The answers are ${answers[0]}`;
+                headingText = "Solve Fractions";
             }
 
             else if(question == "oneValueForX") {
@@ -248,6 +292,9 @@ var generate = (function() {
                 questionText = `${random.name()} is trying to find a value for c so that ${_quadratic} has only one solution for x. Give the value of c.`;
                 answers = [Math.pow(quadratic.b / 2, 2).toString()];
                 stepsOfWorking = `This is a prototype version. The answer is ${Math.pow(quadratic.b / 2, 2)}`;
+
+                headingText = "Find One Value For x";
+                explanationText = "Find one value for x means that you need to find the value of c which would ensure that the quadratic expression has only one solution. To find this, simply divide the coefficient of x by two and then square the result. For example, if the quadratic expression was \\(x^2-8x+c\\), the value for c would be 16. This is because \\(\\frac{-8}{2}=-4\\), and -4 squared is equal to 16.";
             }
 
             else if(question == "valueAtPoint") {
@@ -255,31 +302,8 @@ var generate = (function() {
                 questionText = `A parabola has the equation: ${_quadratic}. What is the value of y when x = ${point}?`;
                 answers = [(quadratic.a * Math.pow(point, 2) + quadratic.b * point + quadratic.c).toString()];
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}`;
-            }
 
-            else if(question == "solveQuadraticWithRHS") {
-                let rhs = random.number(1, 150);
-                quadratic.c = quadratic.c + rhs;
-                let _quadraticNew = format.asQuadratic(quadratic);
-
-                questionText = `A rectangle has the area of ${_quadraticNew}. If the area of the rectangle is ${rhs}, what is the value(s) of x?`;
-                answers = [quadratic.answer1 + "," + quadratic.answer2, quadratic.answer2 + "," + quadratic.answer1];
-                
-                const AC = quadratic.a * (quadratic.c - rhs);
-                stepsOfWorking = quadratic.a == 1 ? `${_quadraticNew}${format.wrapLatex("=" + rhs)}<br>
-                (1) Quadratics can only be solved if the right hand side is equal to 0. Therefore, the first step is to rearrange by subtracting ${rhs} from both sides to get ${_quadratic + format.wrapLatex("=0")}<br>
-                (2) Find the two numbers which add to equal the coefficient of x and multiply to equal the constant. These are ${_factor1} and ${_factor2}<br>
-                (3) Multiply these numbers by negative 1 to get ${_answer1} and ${_answer2}<br>
-                (4). These are your answers.` :
-                `${_quadraticNew + format.wrapLatex("=" + rhs)}<br>
-                (1) Quadratics can only be solved if the right hand side is equal to 0. Therefore, the first step is to rearrange by subtracting ${rhs} from both sides to get ${_quadratic}${format.wrapLatex("=0")}<br>
-                (2) Find the product of the coefficient of ${X2} and the constant, ${AC}<br>
-                (3) Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, ${quadratic.workingAnswer1} and ${quadratic.workingAnswer2}.<br>
-                (4) Split the coefficient of x into these two numbers, ${format.wrapLatex(quadratic.a + "x^2" + format.hideIfOne(quadratic.workingAnswer1, false) + "x" + format.hideIfOne(quadratic.workingAnswer2, false) + "x" + format.evaluatePlus(quadratic.c - rhs))}<br>
-                (5) Factorise the first two terms and the last two terms, ${format.wrapLatex(quadratic.a + "x(x" + format.evaluatePlus(quadratic.workingAnswer1 / quadratic.a) + ")" + format.evaluatePlus(quadratic.workingAnswer2) + "(x" + format.evaluatePlus(((quadratic.c - rhs) / quadratic.workingAnswer2)) + ")")}<br>
-                (6) Finish factorisation ${"(" + format.wrapLatex(quadratic.a + "x" + format.evaluatePlus(quadratic.workingAnswer2) + ")(x" + format.evaluatePlus(_factor1) + ")")}<br>
-                (7) Find the values for x which make a set of brackets equal to 0. These are ${_answer1} and ${_answer2}<br>
-                (8) These are your answers.`;
+                headingText = "Find Value At Point";
             }
 
             else if(question == "howLongPastPoint") {
@@ -292,6 +316,8 @@ var generate = (function() {
                 quadratic.c += yValue;
 
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}`;
+
+                headingText = "Find Time Past Point";
             }
 
             else if(question == "whenNegative") {
@@ -300,6 +326,8 @@ var generate = (function() {
                 questionText = `If ${format.wrapLatex("y=")}${_quadratic}, for what values of x will y be negative?`;
                 answers = [answer1Greater ? _answer2 + ">x>" + _answer1 : _answer2 + ">x>" + _answer1, answer1Greater ? _answer1 + "<x<" + _answer2 : _answer1 + "<x<" + _answer2];
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}`;
+
+                headingText = "Find When Quadratic Is < 0";
             }
 
             else if(question == "solveGivenVariable") {
@@ -319,6 +347,8 @@ var generate = (function() {
 
                 answers = [(aValue * Math.pow(xValue, 2) + bValue * xValue).toString(), aValue * Math.pow(xValue, 2) + bValue * xValue + "cm"];
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
+
+                headingText = "Solve Given Variable";
             }
 
             else if(question == "rearrangeEquations") {
@@ -338,6 +368,8 @@ var generate = (function() {
 
                 answers = [aLetter + "=" + bLetter + format.evaluatePlus(aQuadratic.c + addToA - bQuadratic.c), bLetter + format.evaluatePlus(aQuadratic.c + addToA - bQuadratic.c) + "=" + aLetter];
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
+
+                headingText = "Rearrange Equations";
             }
 
             else if(question == "rearrangeWithRoot") {
@@ -350,6 +382,8 @@ var generate = (function() {
                 answers = ["(" + denominator + rhs + "^2)/" + coefficient + "^2=" + solveFor, solveFor + "=(" + denominator + rhs + "^2)/" + coefficient + "^2", "(" + denominator + rhs + "^2)/" + Math.pow(coefficient, 2) + "=" + solveFor, solveFor + "=(" + denominator + rhs + "^2)/" + Math.pow(coefficient, 2)];
                 
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[3]}.`;
+
+                headingText = "Rearrange Roots";
             }
 
             else if(question == "algebraicWordQuestions") {
@@ -361,6 +395,8 @@ var generate = (function() {
 
                 answers = [(additionalHours + firstTime).toString(), additionalHours + firstTime + "h", additionalHours + firstTime + "hours"];
                 stepsOfWorking = `This is in a protype version. The answer is ${answers[0]}.`;
+
+                headingText = "Algebraic Word Questions";
             }
 
             //This function could be refactored to be far more readable, but it's given me enough of a headache as it is.
@@ -412,7 +448,6 @@ var generate = (function() {
                     let _letter1InTerm = numeratorTerms[i].letter1sInTerm == 0 ? "" : numeratorTerms[i].letter1sInTerm == 1 ? letter1 : `${letter1}^${numeratorTerms[i].letter1sInTerm}`;
                     let _letter2InTerm = numeratorTerms[i].letter2sInTerm == 0 ? "" : numeratorTerms[i].letter2sInTerm == 1 ? letter2 : `${letter2}^${numeratorTerms[i].letter2sInTerm}`;
                     _numeratorText += `${coefficientsForEachTerm[i]}${_letter1InTerm}${_letter2InTerm}`;
-                    console.log(_numeratorText);
                 }
 
                 letter1sInDenominator -= commonLetter1s;
@@ -422,6 +457,8 @@ var generate = (function() {
 
                 answers = [`(${_numeratorText})/${_coefficientInDenominator}${_letter1sInDenominator}${_letter2sInDenominator}`];
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
+
+                headingText = "Remove Common Factors";
             }
 
             else if(question == "rawNumeric") {
@@ -440,6 +477,7 @@ var generate = (function() {
                 answers = [xValue.toString()];
                 stepsOfWorking = `This is a prototype version. The answer is ${xValue}`;
 
+                headingText = "Simultaneous Equations";
             }
 
             else if(question == "exchange") {
@@ -454,7 +492,9 @@ var generate = (function() {
                 If instead ${name2} gave ${name1} $${shift}, ${name1} would have twice as much money as ${name2}. 
                 How much money does each person actually have?`;
                 answers = [`${answer1},${answer2}`, `${answer2},${answer1}`, `$${answer1},$${answer2}`, `$${answer2},$${answer1}`];
-                stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`; 
+                stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
+
+                headingText = "Simultaneous Equations 1";
             }
 
             else if(question == "ratios") {
@@ -466,6 +506,8 @@ var generate = (function() {
                 questionText = `${name1} and ${name2} live ${distance} km away from each other. ${name1} skateboards ${speed1} km in the same time as  ${name2} rides his bike ${speed2} km. If they both leave home at the same time and travel towards each other, how far from  ${name2}'s home will they meet?`;
                 answers = [(distance * 100 / 25 * speed2 / 100).toString(), distance * 100 / 25 * speed2 / 100 + "km"];
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
+
+                headingText = "Simultaneous Equations 2";
             }
 
             else if(question == "solveConversionsToPowers") {
@@ -479,6 +521,8 @@ var generate = (function() {
                 questionText = format.wrapLatex(`${firstTerm}*${base}^{x${format.evaluatePlus(termWithX)}}=${rhs}`);
                 answers = [(rhsPower - termWithX - firstTermPower).toString()];
                 stepsOfWorking = [`This is a prototype version. The answer is ${answers[0]}`];
+
+                headingText = "Solve Powers";
             }
 
             else if(question == "solveRemovingBases") {
@@ -486,6 +530,8 @@ var generate = (function() {
                 questionText = `${format.wrapLatex(`${base}^{${quadratic.b * -1}x${format.evaluatePlus(quadratic.c * -1)}}=${base}^{${format.hideIfOne(quadratic.a, false)}x^{2}}`)}. Find the value(s) of x.`;
                 answers = [_answer1 + "," + _answer2, _answer2 + "," + _answer1];
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
+
+                headingText = "Solve Removing Bases";
             }
 
             else if(question == "powerInequalities") {
@@ -503,38 +549,16 @@ var generate = (function() {
                 answers = [answers.toString()];
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
 
+                headingText = "Power Inequalities";
             }
         
             return {
                 questionText: questionText,
                 answers: answers,
-                stepsOfWorking: stepsOfWorking
+                stepsOfWorking: stepsOfWorking,
+                headingText: headingText,
+                explanationText: explanationText
             };
         }
     };
 })();
-
-/*
-let j = 0;
-function changeQuestion(id) {
-    console.clear();
-    id.innerHTML = "";
-    for(let i = 0; i < 50; i ++){
-        displayElement("ID: " + i + " Question: " + questions[j]().questionText);
-        console.log("Question: " + i + " Answers: "+ questions[j]().answers);
-    }
-    j ++;
-    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
-}
-
-for(let i = 0; i < 100; i ++){
-    var question = solveQuadratic();
-    displayElement("ID: " + i + " Question: " + question.questionText);
-    console.log("Question: " + i + " Answers: "+ question.answers);
-}
-function displayElement(element) {
-    var equationHTML = document.createElement("p");
-    equationHTML.appendChild(document.createTextNode(element));
-    document.getElementById("test").appendChild(equationHTML);
-}
-*/
