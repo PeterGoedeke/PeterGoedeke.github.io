@@ -99,7 +99,8 @@
     }
 
     function markAnswer() {
-        const answeredCorrectly = !!currentQuestion.answers.includes(inputBox.value.replace(/\s/g, ''));
+        const userAnswer = inputBox.value.replace(/\s/g, '');
+        var answeredCorrectly = !!currentQuestion.answers.includes(userAnswer);
         if(answeredCorrectly) inputBox.classList.add("correct");
         else inputBox.classList.add("incorrect");
         setTimeout(() => {inputBox.classList.remove("correct"); inputBox.classList.remove("incorrect")}, 1000);

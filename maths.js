@@ -280,7 +280,9 @@ var generate = (function() {
                 let answer2 = rhsNumeratorContainsX ? quadraticFormula(rhsNumerator, denominatorQuadratic.answer2 * rhsNumerator * -1 - rhsDenominator, rhsDenominator * numeratorQuadratic.answer2) : 
                 quadraticFormula(rhsDenominator, numeratorQuadratic.answer2 * rhsDenominator *-1 - rhsNumerator, rhsNumerator * denominatorQuadratic.answer2);
                 answer2 = answer1 == answer2[0] ? answer2[1] : answer2[0];
-                
+                answer1 = Math.round(answer1 * 10) / 10;
+                answer2 = Math.round(answer2 * 10) / 10;
+
                 rhsNumeratorContainsX ? rhsNumerator = format.hideIfOne(rhsNumerator, false) + "x" :
                 rhsDenominator = format.hideIfOne(rhsDenominator, false) + "x";
                 questionText = `Solve \\(\\frac\{${format.asQuadratic(numeratorQuadratic, false)}\}\{${format.asQuadratic(denominatorQuadratic, false)}\}=\\frac\{${rhsNumerator}\}\{${rhsDenominator}\}\\)`;
@@ -288,7 +290,7 @@ var generate = (function() {
                 stepsOfWorking = `This is a prototype version. The answers are ${answer1} and ${answer2}`;
 
                 headingText = "Solve Fractions";
-                placeholderText = "a, b";
+                placeholderText = "a, b (round to one decimal place)";
             }
 
             else if(question == "oneValueForX") {
