@@ -92,6 +92,7 @@ ul {
     border: solid lightgrey 1px;
     border-radius: 5px;
 }
+
 .questionPaneHeading {
     display: block;
     width: 100%;
@@ -108,7 +109,7 @@ ul {
     height: 90%;
     text-align: center;
 }
-.inputBox {
+.inputForm {
     display: block;
     position: absolute;
     width: 100%;
