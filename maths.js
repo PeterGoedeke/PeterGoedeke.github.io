@@ -152,9 +152,9 @@ var generate = (function() {
                 let aValueIsNotOneWorking = `${_quadratic}<br>
                     (1) Find the product of the coefficient of ${format.wrapLatex("x^2")} and the constant, ${AC}<br>
                     (2) Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, ${quadratic.workingAnswer1} and ${quadratic.workingAnswer2}<br>
-                    (3) Split the coefficient of x into these two numbers, ${format.wrapLatex(quadratic.a + "x^2" + format.hideIfOne(quadratic.workingAnswer1, false) + "x" + format.hideIfOne(quadratic.workingAnswer2, false) + "x" + format.evaluatePlus(quadratic.c))}<br>
-                    (4) Factorise the first two terms and the last two terms, ${format.wrapLatex(quadratic.a + "x(x" + format.evaluatePlus(quadratic.workingAnswer1 / quadratic.a) + ")" + format.evaluatePlus(quadratic.workingAnswer2) + "(x" + format.evaluatePlus(quadratic.c / quadratic.workingAnswer2))}<br>
-                    (5) Finish factorisation, ${format.wrapLatex("(" + quadratic.a + "x" + format.evaluatePlus(quadratic.workingAnswer2) + ")(x" + format.evaluatePlus(_factor2) + ")")}<br>
+                    (3) Split the coefficient of x into these two numbers, ${format.wrapLatex(quadratic.a + "x^2" + format.hideIfOne(quadratic.workingAnswer1) + "x" + format.hideIfOne(quadratic.workingAnswer2) + "x" + format.evaluatePlus(quadratic.c))}<br>
+                    (4) Factorise the first two terms and the last two terms, ${format.wrapLatex(quadratic.a + "x(x" + format.evaluatePlus(quadratic.workingAnswer1 / quadratic.a) + ")" + format.evaluatePlus(quadratic.workingAnswer2) + "(x" + format.evaluatePlus(quadratic.c / quadratic.workingAnswer2) + ")")}<br>
+                    (5) Finish factorisation, ${format.wrapLatex("(" + quadratic.a + "x" + format.evaluatePlus(quadratic.workingAnswer2) + ")(x" + format.evaluatePlus(_factor1) + ")")}<br>
                     (6) Find the values for x which make a set of brackets equal to 0. These are ${_answer1} and ${_answer2}<br>
                     (7) These are your answers.`;
                 stepsOfWorking = quadratic.a == 1 ? aValueIsOneWorking : aValueIsNotOneWorking;
@@ -162,6 +162,7 @@ var generate = (function() {
                 headingText = "Solve Quadratics";
                 explanationText = "Solving a quadratic means finding values for x which make the equation true. An example of a quadratic equation would be $$x^2+5x+6$$ To make this equation true, the quadratic expression on the left hand side must equal 0.\nTo do this, find the two numbers which add up to equal the coefficient to x, and multiply to equal the constant.\nFor this particular quadratic, the numbers 2 and 3 add to equal 5, and multiply to equal 6.\nThe inverse of these two numbers (a.k.a. these two numbers multiplied by -1) are the solutions to the quadratic; therefore, -2 and -3 are the solutions for this quadratic.";
                 placeholderText = "a, b";
+                console.log(`a: ${quadratic.a} b: ${quadratic.b} c: ${quadratic.c} answer1: ${quadratic.answer1} answer2: ${quadratic.answer2} workingAnswer1: ${quadratic.workingAnswer1} workingAnswer2 ${quadratic.workingAnswer2}.`);
             }
 
             else if(question == "solveQuadraticWithRHS") {
@@ -290,7 +291,7 @@ var generate = (function() {
                 stepsOfWorking = `This is a prototype version. The answers are ${answer1} and ${answer2}`;
 
                 headingText = "Solve Fractions";
-                placeholderText = "a, b (round to one decimal place)";
+                placeholderText = "a, b (round to one dp)";
             }
 
             else if(question == "oneValueForX") {
@@ -575,7 +576,6 @@ var generate = (function() {
                 headingText = "Power Inequalities";
                 placeholderText = "a, b, c";
             }
-        
             return {
                 questionText: questionText,
                 answers: answers,
