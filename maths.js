@@ -567,6 +567,7 @@ var generate = (function() {
                     result = Math.pow(base, i + termWithX);
                     if(result < rhs / firstTerm) answers.push(i);
                 }
+                if(termWithX == 0) termWithX = "";
                 questionText = `If x is a whole number, for what values of x is ${format.wrapLatex(`${firstTerm}*${base}^{x${format.evaluatePlus(termWithX)}}<${rhs}`)}?`;
                 answers = [answers.toString()];
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
