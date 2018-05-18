@@ -488,8 +488,8 @@ var generate = (function() {
                 let c = a * xValue + b * yValue;
                 let f = d * xValue + e * yValue;
                 
-                let _equationOne = format.wrapLatex(`${format.hideIfOne(a)}${x}${format.hideIfOne(b, false)}${y}=${c}`);
-                let _equationTwo = format.wrapLatex(`${format.hideIfOne(d)}${x}${format.hideIfOne(e, false)}${y}=${f}`);
+                let _equationOne = format.wrapLatex(`${format.hideIfOne(a, false)}${x}${format.hideIfOne(b)}${y}=${c}`);
+                let _equationTwo = format.wrapLatex(`${format.hideIfOne(d, false)}${x}${format.hideIfOne(e)}${y}=${f}`);
                 questionText = `If ${_equationOne} and ${_equationTwo}, what is the value of ${x}?`;
                 answers = [xValue.toString()];
                 stepsOfWorking = `This is a prototype version. The answer is ${xValue}`;
