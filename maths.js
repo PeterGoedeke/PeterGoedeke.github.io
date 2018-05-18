@@ -162,7 +162,6 @@ var generate = (function() {
                 headingText = "Solve Quadratics";
                 explanationText = "Solving a quadratic means finding values for x which make the equation true. An example of a quadratic equation would be $$x^2+5x+6$$ To make this equation true, the quadratic expression on the left hand side must equal 0.\nTo do this, find the two numbers which add up to equal the coefficient to x, and multiply to equal the constant.\nFor this particular quadratic, the numbers 2 and 3 add to equal 5, and multiply to equal 6.\nThe inverse of these two numbers (a.k.a. these two numbers multiplied by -1) are the solutions to the quadratic; therefore, -2 and -3 are the solutions for this quadratic.";
                 placeholderText = "a, b";
-                console.log(`a: ${quadratic.a} b: ${quadratic.b} c: ${quadratic.c} answer1: ${quadratic.answer1} answer2: ${quadratic.answer2} workingAnswer1: ${quadratic.workingAnswer1} workingAnswer2 ${quadratic.workingAnswer2}.`);
             }
 
             else if(question == "solveQuadraticWithRHS") {
@@ -183,9 +182,9 @@ var generate = (function() {
                 (1) Quadratics can only be solved if the right hand side is equal to 0. Therefore, the first step is to rearrange by subtracting ${rhs} from both sides to get ${_quadratic}${format.wrapLatex("=0")}<br>
                 (2) Find the product of the coefficient of ${X2} and the constant, ${AC}<br>
                 (3) Find the two numbers which add to equal the coefficient of x and multiply to equal this new number, ${quadratic.workingAnswer1} and ${quadratic.workingAnswer2}.<br>
-                (4) Split the coefficient of x into these two numbers, ${format.wrapLatex(quadratic.a + "x^2" + format.hideIfOne(quadratic.workingAnswer1, false) + "x" + format.hideIfOne(quadratic.workingAnswer2, false) + "x" + format.evaluatePlus(quadratic.c - rhs))}<br>
+                (4) Split the coefficient of x into these two numbers, ${format.wrapLatex(quadratic.a + "x^2" + format.hideIfOne(quadratic.workingAnswer1) + "x" + format.hideIfOne(quadratic.workingAnswer2) + "x" + format.evaluatePlus(quadratic.c - rhs))}<br>
                 (5) Factorise the first two terms and the last two terms, ${format.wrapLatex(quadratic.a + "x(x" + format.evaluatePlus(quadratic.workingAnswer1 / quadratic.a) + ")" + format.evaluatePlus(quadratic.workingAnswer2) + "(x" + format.evaluatePlus(((quadratic.c - rhs) / quadratic.workingAnswer2)) + ")")}<br>
-                (6) Finish factorisation ${"(" + format.wrapLatex(quadratic.a + "x" + format.evaluatePlus(quadratic.workingAnswer2) + ")(x" + format.evaluatePlus(_factor1) + ")")}<br>
+                (6) Finish factorisation ${format.wrapLatex("(" + quadratic.a + "x" + format.evaluatePlus(quadratic.workingAnswer2) + ")(x" + format.evaluatePlus(_factor1) + ")")}<br>
                 (7) Find the values for x which make a set of brackets equal to 0. These are ${_answer1} and ${_answer2}<br>
                 (8) These are your answers.`;
 
@@ -380,7 +379,6 @@ var generate = (function() {
                 const _addToB1 = isNaN(addToB[0]) ? "" : format.hideIfOne(addToB[0], false) + "x^2";
                 const _addToB2 = isNaN(addToB[1]) ? "" : format.hideIfOne(addToB[1], false) + "x";
                 questionText = `${format.wrapLatex(`${aLetter}=`)}${_aQuadratic}${format.wrapLatex(format.evaluatePlus(addToA))} and ${format.wrapLatex(`${bLetter}=`)}${_bQuadratic}${format.wrapLatex(_addToB1 + _addToB2)}. Give an expression for ${aLetter} in terms of ${bLetter}.`;
-
                 answers = [aLetter + "=" + bLetter + format.evaluatePlus(aQuadratic.c + addToA - bQuadratic.c), bLetter + format.evaluatePlus(aQuadratic.c + addToA - bQuadratic.c) + "=" + aLetter];
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
 
@@ -393,7 +391,7 @@ var generate = (function() {
                 let [coefficient, denominator] = [random.number(2, 4), random.number(2, 15)];
 
                 const equation = format.wrapLatex(`${rhs}=${coefficient}\\sqrt\{\\frac\{${solveFor}\}\{${denominator}\}\}`);
-                questionText = `The formula${equation} solves for ${rhs}. Rearrange the formula to solve for ${solveFor}.`;
+                questionText = `The formula ${equation} solves for ${rhs}. Rearrange the formula to solve for ${solveFor}.`;
                 
                 answers = ["(" + denominator + rhs + "^2)/" + coefficient + "^2=" + solveFor, solveFor + "=(" + denominator + rhs + "^2)/" + coefficient + "^2", "(" + denominator + rhs + "^2)/" + Math.pow(coefficient, 2) + "=" + solveFor, solveFor + "=(" + denominator + rhs + "^2)/" + Math.pow(coefficient, 2)];
                 
@@ -470,8 +468,8 @@ var generate = (function() {
 
                 letter1sInDenominator -= commonLetter1s;
                 letter2sInDenominator -= commonLetter2s;
-                _letter1sInDenominator = letter1sInDenominator == 1 ? letter1 : `${letter1}^${letter1sInDenominator}`;
-                _letter2sInDenominator = letter2sInDenominator == 1 ? letter2 : `${letter2}^${letter2sInDenominator}`;
+                _letter1sInDenominator = letter1sInDenominator == 0 ? "" : letter1sInDenominator == 1 ? letter1 : `${letter1}^${letter1sInDenominator}`;
+                _letter2sInDenominator = letter1sInDenominator == 0 ? "" : letter2sInDenominator == 1 ? letter2 : `${letter2}^${letter2sInDenominator}`;
 
                 answers = [`(${_numeratorText})/${_coefficientInDenominator}${_letter1sInDenominator}${_letter2sInDenominator}`];
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}.`;
