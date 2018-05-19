@@ -504,11 +504,14 @@ var generate = (function() {
             }
 
             else if(question == "exchange") {
-                let twiceMoney = random.number(70, 150, false, "even");
-                let shift = random.number(4, 30, false, "even");
-                let answer1 = twiceMoney - shift;
-                let answer2 = twiceMoney / 2 + shift;
+                let twiceMoney, shift, answer1, answer2;
                 let [name1, name2] = [random.name(), random.name()];
+                do {
+                    twiceMoney = random.number(70, 150, false, "even");
+                    shift = random.number(4, 30, false, "even");
+                    answer1 = twiceMoney - shift;
+                    answer2 = twiceMoney / 2 + shift;
+                } while(answer1 < answer2);
 
                 let _moneyToGive = (answer1 - answer2) / 2;
                 questionText = `${name1} has more money than ${name2}. If ${name1} gave ${name2} $${_moneyToGive}, they would have the same amount. 
