@@ -323,7 +323,6 @@ var generate = (function() {
             }
 
             else if(question == "howLongPastPoint") {   
-                console.log(quadratic);
                 let yValue = random.number(1, 5);
                 quadratic.c += yValue;
                 _quadratic = format.asQuadratic(quadratic);
@@ -333,8 +332,6 @@ var generate = (function() {
 
                 headingText = "Find Time Past Point";
                 placeholderText = "a";
-
-                console.log(quadratic.answer1, quadratic.answer2);
             }
 
             else if(question == "whenNegative") {
@@ -420,7 +417,6 @@ var generate = (function() {
                 placeholderText = "a";
             }
 
-            //This function could be refactored to be far more readable, but it's given me enough of a headache as it is.
             else if(question == "simplify") {
                 let [letter1, letter2] = [random.letter(), random.letter()];
                 

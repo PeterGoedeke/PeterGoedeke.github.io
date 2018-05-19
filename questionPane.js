@@ -18,7 +18,6 @@
         refreshMathJax(displayArea);
         document.querySelector(".questionPaneHeading").textContent = currentQuestion.headingText;
         inputBox.placeholder = currentQuestion.placeholderText;
-        console.log(currentQuestion.answers);
     }
 
     //Validate input
