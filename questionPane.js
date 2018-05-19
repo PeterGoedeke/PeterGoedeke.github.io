@@ -109,7 +109,7 @@
 
     function adjustDifficulty(answeredCorrectly) {
         if(answeredCorrectly == "reset") {
-            currentDifficulty = 9;
+            currentDifficulty = 0;
             return;
         }
         if(answeredCorrectly) {

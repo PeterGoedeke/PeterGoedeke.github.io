@@ -122,7 +122,12 @@ var generate = (function() {
         question: function(question) {
             var quadratic = stockQuadratic();
             if(question == "solveQuadraticWithRHS") quadratic = rawQuadratic(random.number(scalingRange(5, 10), scalingRange(5, 10, false), true), random.number(scalingRange(5, 10), scalingRange(5, 10, false), true));
-            
+            if(question == "howLongPastPoint") {
+                let quadraticA = random.number(scalingRange(1, 5), scalingRange(1, 5, false), false, "scaling", 0.2);
+                quadraticA *= -1;
+                quadratic = rawQuadratic(stockRandom(), stockRandom(), quadraticA);  
+            }
+
             var _quadratic = format.asQuadratic(quadratic);
             var _fQuadratic = format.asfQuadratic(quadratic);
             var [_factor1, _factor2] = [quadratic.answer1 * -1, quadratic.answer2 * -1];
@@ -317,19 +322,19 @@ var generate = (function() {
                 placeholderText = "a";
             }
 
-            else if(question == "howLongPastPoint") {
-                let yValue = random.number(1, 10);
-
-                questionText = `${random.name()} kicks a ball. The flight path of the ball can be modelled by ${format.wrapLatex("y=")}${_quadratic}, where x and y are measured in metres. For how many metres of the horizontal distance that the ball travels will it be ${yValue} metres or more above the ground?`;
-
-                let answer = quadraticFormula(quadratic.a, quadratic.b, quadratic.c);
-                answers = [(answer[0] - answer[1]).toString(), (answer[0] - answer[1]) + "m"];
+            else if(question == "howLongPastPoint") {   
+                console.log(quadratic);
+                let yValue = random.number(1, 5);
                 quadratic.c += yValue;
-
+                _quadratic = format.asQuadratic(quadratic);
+                questionText = `${random.name()} kicks a ball. The flight path of the ball can be modelled by ${format.wrapLatex("y=")}${_quadratic}, where x and y are measured in metres. For how many metres of the horizontal distance that the ball travels will it be ${yValue} metres or more above the ground?`;
+                answers = [Math.abs(quadratic.answer1 - quadratic.answer2).toString()];
                 stepsOfWorking = `This is a prototype version. The answer is ${answers[0]}`;
 
                 headingText = "Find Time Past Point";
                 placeholderText = "a";
+
+                console.log(quadratic.answer1, quadratic.answer2);
             }
 
             else if(question == "whenNegative") {
